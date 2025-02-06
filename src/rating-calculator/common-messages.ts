@@ -14,6 +14,7 @@ export const CommonMessages = {
     showMore: 'Show more',
     showLess: 'Show less',
     autofill: 'Autofill',
+    example: 'example',
   },
   [Language.zh_TW]: {
     all: '全部',
@@ -28,6 +29,7 @@ export const CommonMessages = {
     showMore: '顯示更多',
     showLess: '顯示較少',
     autofill: '自動帶入',
+    example: '範例',
   },
   [Language.ko_KR]: {
     all: '전부',
@@ -42,5 +44,6 @@ export const CommonMessages = {
     showMore: '자세히 보기',
     showLess: '간략히',
     autofill: '자동입력',
+    example: '예',
   },
 };

@@ -13,7 +13,6 @@ const MessagesByLang = {
     bookmarketLinkLabel: 'maimai bookmarklets',
     scoreInputDescSuffix: ' to import scores.',
     importFromFile: 'Import from JSON file',
-    example: 'example',
     uploadFile: 'Select file',
   },
   [Language.zh_TW]: {
@@ -22,7 +21,6 @@ const MessagesByLang = {
     bookmarketLinkLabel: 'maimai 書籤小工具',
     scoreInputDescSuffix: ' 中的「分析自己 DX Rating」或「分析好友 DX Rating」帶入資料。',
     importFromFile: '匯入 JSON 檔案',
-    example: '範例',
     uploadFile: '選取檔案',
   },
   // TODO: update Korean translation
@@ -33,7 +31,6 @@ const MessagesByLang = {
     scoreInputDescSuffix:
       '의 "내 디럭스 레이팅 분석하기" 또는 "친구 디럭스 레이팅 분석하기"를 사용해서 채워주세요.',
     importFromFile: 'JSON 파일에서 가져오기',
-    example: '예',
     uploadFile: '파일 선택',
   },
 };
@@ -118,7 +115,7 @@ export const ScoreInput = ({setPlayerScores}: Props) => {
         <div>
           {messages.scoreInputHeading}:{' '}
           <a href="https://gist.github.com/myjian/a978fda8821beca682ec3a726e17b780" target="_blank">
-            {messages.example}
+            {commonMessages.example}
           </a>
         </div>
         <button className="selectFileBtn" onClick={loadFromFile}>

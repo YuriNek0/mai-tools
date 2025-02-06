@@ -40,6 +40,10 @@ export function getDifficultyNameForDxRatingNet(d: Difficulty): string {
   }
 }
 
+export function getDifficultyFromShortName(diff: string): Difficulty {
+  return DIFFICULTY_SHORT_TEXT.findIndex((d) => d.toLowerCase() === diff.toLowerCase());
+}
+
 export function getDifficultyShortName(diff: Difficulty): string {
   return DIFFICULTY_SHORT_TEXT[diff];
 }

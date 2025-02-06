@@ -6,6 +6,7 @@ export const enum UserPreference {
   MaxLv = 'visualizerMaxLv',
   TableDisplay = 'visualizerTableDisplay',
   TargetRating = 'targetRating',
+  InternalLvOverride = 'internalLvOverride',
 }
 
 export function loadUserPreference(key: UserPreference) {

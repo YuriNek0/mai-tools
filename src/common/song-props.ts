@@ -29,6 +29,56 @@ export class SongDatabase {
     private nameByIco: Map<string, string> = new Map()
   ) {}
 
+  insertOrUpdateSong(song: SongProperties) {
+    if (this.updateSong(song)) {
+      return;
+    }
+    const map = song.dx === ChartType.DX ? this.dxMap : this.standardMap;
+    const key = song.name === 'Link' ? song.nickname : song.name;
+    if (song.ico) {
+      this.nameByIco.set(song.ico, key);
+    }
+    if (map.has(key)) {
+      console.warn(
+        `Found existing song properties for ${key} ${song.dx}: ${JSON.stringify(map.get(key))}`
+      );
+      console.warn(`Will ignore ${song}`);
+      return;
+    }
+    map.set(key, song);
+  }
+
+  /**
+   * @return true if song prop is successfully updated.
+   */
+  updateSong(update: Partial<SongProperties>): boolean {
+    const map = update.dx === ChartType.DX ? this.dxMap : this.standardMap;
+    const key = map.has(update.name) ? update.name : update.nickname;
+    const existing = map.get(key);
+    if (!existing) {
+      return false;
+    }
+
+    let levels = existing.lv;
+    if (update.lv instanceof Array) {
+      levels = existing.lv.map((oldLevel, i) => {
+        const newLevel = update.lv[i];
+        // NaN > 0 will evaluate to false
+        return typeof newLevel === 'number' && newLevel > 0 ? newLevel : oldLevel;
+      });
+    }
+    if (update.ico) {
+      this.nameByIco.set(update.ico, key);
+    }
+    map.set(key, {...existing, ...update, lv: levels});
+    return true;
+  }
+
+  deleteSong(name: string) {
+    this.dxMap.delete(name);
+    this.standardMap.delete(name);
+  }
+
   hasDualCharts(songName: string, genre: string): boolean {
     if (songName === 'Link') return true;
     if (this.dxMap.has(songName) && this.standardMap.has(songName)) {
@@ -91,7 +141,6 @@ export class SongDatabase {
   }
 }
 
-// TODO: accept overrides from rating calculator
 export async function loadSongDatabase(
   gameVer: GameVersion,
   gameRegion: GameRegion

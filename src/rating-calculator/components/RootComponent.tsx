@@ -17,9 +17,11 @@ import {getInitialLanguage, Language, saveLanguage} from '../../common/lang';
 import {LangContext} from '../../common/lang-react';
 import {QueryParam} from '../../common/query-params';
 import {BasicSongProps, loadSongDatabase, SongDatabase} from '../../common/song-props';
+import {saveUserPreference, UserPreference} from '../../common/user-preference';
 import {analyzePlayerRating} from '../rating-analyzer';
 import {RatingData} from '../types';
 import {DebugActions} from './DebugActions';
+import {InternalLvInput, parseInternalLvInput} from './InternalLvInput';
 import {LanguageChooser} from './LanguageChooser';
 import {OtherTools} from './OtherTools';
 import {PageFooter} from './PageFooter';
@@ -115,6 +117,7 @@ export class RootComponent extends React.PureComponent<{}, State> {
           </tbody>
         </table>
         <ScoreInput setPlayerScores={this.setPlayerScores} />
+        <InternalLvInput />
         <div className="actionArea">
           <button className="analyzeRatingBtn" onClick={this.analyzeRating}>
             {messages.computeRating}
@@ -171,7 +174,13 @@ export class RootComponent extends React.PureComponent<{}, State> {
     ) {
       this.songDatabase = await loadSongDatabase(gameVer, region);
     }
-    // TODO: support overrides by user
+    const lvInputTextarea = document.querySelector('#lvInput');
+    if (lvInputTextarea instanceof HTMLTextAreaElement) {
+      saveUserPreference(UserPreference.InternalLvOverride, lvInputTextarea.value);
+      const overrides = parseInternalLvInput(lvInputTextarea.value);
+      console.log(overrides);
+      overrides.forEach((override) => this.songDatabase.updateSong(override));
+    }
     console.log('Song database:', this.songDatabase);
     console.log('Player scores:', this.playerScores);
     if (!this.playerScores.length) {
