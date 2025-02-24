@@ -3,7 +3,7 @@ import {Difficulty} from './difficulties';
 import {getSongName} from './fetch-score-util';
 import {SELF_SCORE_URLS} from './fetch-self-score';
 import {fetchPage} from './net-helpers';
-import {getSongIdx, isNiconicoLink} from './song-name-helper';
+import {getLinkGenre, getSongIdx, getSongNickname} from './song-name-helper';
 import {BasicSongProps} from './song-props';
 
 export const ALLOWED_ORIGINS = [
@@ -26,7 +26,8 @@ async function parseSongList(dom: Document) {
     const isDx = getChartType(d);
     let nickname: string | undefined;
     if (name === 'Link') {
-      nickname = (await isNiconicoLink(idx)) ? 'Link (nico)' : 'Link (org)';
+      const genre = await getLinkGenre(idx);
+      nickname = getSongNickname(name, genre);
     }
     songs.push({dx: isDx, name, nickname});
   }

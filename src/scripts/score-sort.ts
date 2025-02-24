@@ -19,7 +19,7 @@ import {
   getOfficialLevel,
 } from '../common/level-helper';
 import {fetchGameVersion, fetchPage} from '../common/net-helpers';
-import {getSongIdx, isNiconicoLink} from '../common/song-name-helper';
+import {getLinkGenre, getSongIdx} from '../common/song-name-helper';
 import {loadSongDatabase, SongDatabase, SongProperties} from '../common/song-props';
 
 const enum SortBy {
@@ -726,20 +726,18 @@ type Cache = {
       const name = getSongName(row);
       if (name === 'Link') {
         const lvIndex = DIFFICULTIES.indexOf(getChartDifficulty(row));
-        try {
-          // idx is not available on friend score page and getSongIdx will throw.
-          const idx = getSongIdx(row);
-          const isNico = await isNiconicoLink(idx);
-          let props: SongProperties | null;
-          if (isNico) {
+        const idx = getSongIdx(row);
+        if (idx) {
+          // idx is only available on self score page
+          const genre = await getLinkGenre(idx);
+          if (genre.includes('niconico')) {
             cache.nicoLinkIdx = idx;
-            props = songDb.getSongProperties(name, 'niconico', ChartType.STANDARD);
           } else {
             cache.originalLinkIdx = idx;
-            props = songDb.getSongProperties(name, '', ChartType.STANDARD);
           }
+          const props = songDb.getSongProperties(name, genre, ChartType.STANDARD);
           saveInLv(row, coalesceInLv(gameVer, row, lvIndex, props));
-        } catch (e) {
+        } else {
           saveInLv(row, coalesceInLv(gameVer, row, lvIndex));
         }
       } else {

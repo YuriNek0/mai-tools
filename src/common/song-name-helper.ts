@@ -10,8 +10,12 @@ export function normalizeSongName(name: string) {
   return name.replace(/" \+ '/g, '').replace(/' \+ "/g, '');
 }
 
-export function getSongIdx(row: HTMLElement) {
-  return (row.getElementsByTagName('form')[0].elements.namedItem('idx') as HTMLInputElement).value;
+export function getSongIdx(row: HTMLElement): string {
+  const form = row.getElementsByTagName('form');
+  if (!form.length) {
+    return null;
+  }
+  return (form[0].elements.namedItem('idx') as HTMLInputElement).value;
 }
 
 export function getSongNickname(name: string, genre: string) {
@@ -38,12 +42,12 @@ export function getSongNicknameWithChartType(
 
 let cachedLinkIdx: {nico?: string; original?: string} = {};
 
-export async function isNiconicoLink(idx: string): Promise<boolean> {
+export async function getLinkGenre(idx: string): Promise<string> {
   if (cachedLinkIdx.nico === idx) {
-    return true;
+    return 'niconico';
   }
   if (cachedLinkIdx.original === idx) {
-    return false;
+    return 'maimai';
   }
   const dom = await fetchSongDetailPage(idx);
   const isNico = (dom.body.querySelector('.m_10.m_t_5.t_r.f_12') as HTMLElement).innerText.includes(
@@ -55,7 +59,7 @@ export async function isNiconicoLink(idx: string): Promise<boolean> {
   } else {
     cachedLinkIdx.original = idx;
   }
-  return isNico;
+  return isNico ? 'nicknico' : 'maimai';
 }
 
 export function getSongGenreFromImg(songName: string, imgSrc: string): string {

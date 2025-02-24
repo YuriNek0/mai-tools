@@ -1,7 +1,7 @@
 import {ChartType, getChartType} from '../common/chart-type';
 import {getSongName} from '../common/fetch-score-util';
 import {getGameRegionFromOrigin} from '../common/game-region';
-import {getSongIdx, isNiconicoLink} from '../common/song-name-helper';
+import {getLinkGenre, getSongIdx, getSongNickname} from '../common/song-name-helper';
 
 const FILE_PREFIX = getGameRegionFromOrigin(window.location.origin);
 
@@ -51,7 +51,8 @@ async function buildSongDb(versionName: string, platePrefix: string) {
     // let lv = getChartLevel(d);
     const c = getChartType(d);
     if (n === 'Link') {
-      n = (await isNiconicoLink(idx)) ? 'Link (nico)' : 'Link (org)';
+      const genre = await getLinkGenre(idx);
+      n = getSongNickname(n, genre);
       // } else if (n === '+♂' || n === '39') {
       //   n = "'" + n;
     }

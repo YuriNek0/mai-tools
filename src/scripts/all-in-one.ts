@@ -48,7 +48,11 @@ import {handleError} from '../common/util';
     ) {
       import('./score-sort');
     }
-  } else if (path === '/maimai-mobile/home/' || path === '/maimai-mobile/playerData/') {
+  } else if (
+    path === '/maimai-mobile/home/' ||
+    path === '/maimai-mobile/home/ratingTargetMusic/' ||
+    path === '/maimai-mobile/playerData/'
+  ) {
     removeScrollControl(d);
     import('./score-download');
     import('./analyze-rating-in-newtab');

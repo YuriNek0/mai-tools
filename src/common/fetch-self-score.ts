@@ -73,7 +73,7 @@ function processRow(
   } else if (isScoreRow) {
     const achievement = getAchievement(row);
     if (!achievement) {
-      return;
+      return null;
     }
     const songName = getSongName(row);
     const chartType = getChartType(row);
@@ -102,15 +102,26 @@ export async function fetchScores(
   if (!dom) {
     const url = SELF_SCORE_URLS.get(difficulty);
     if (!url) {
-      return;
+      return [];
     }
-    dom = await fetchPage(url);
+    try {
+      dom = await fetchPage(url);
+    } catch (e) {
+      console.warn(`Failed to load score page for difficulty ${difficulty}`, e);
+      return [];
+    }
     domCache.set(difficulty, dom);
   }
-  const rows = dom.querySelectorAll('.main_wrapper.t_c .m_15') as NodeListOf<HTMLElement>;
+  const rows = Array.from(dom.querySelectorAll<HTMLElement>('.main_wrapper.t_c .m_15'));
   const state = {genre: ''};
-  const recordsWithNull = Array.from(rows).map((row) => processRow(row, difficulty, songDb, state));
-  return recordsWithNull.filter((record) => record != null);
+  const records: ChartRecord[] = [];
+  for (const row of rows) {
+    const record = processRow(row, difficulty, songDb, state);
+    if (record != null) {
+      records.push(record);
+    }
+  }
+  return records;
 }
 
 function processRowFull(
@@ -148,10 +159,14 @@ export async function fetchScoresFull(
     dom = await fetchPage(url);
     domCache.set(difficulty, dom);
   }
-  const rows = dom.querySelectorAll('.main_wrapper.t_c .m_15') as NodeListOf<HTMLElement>;
+  const rows = Array.from(dom.querySelectorAll<HTMLElement>('.main_wrapper.t_c .m_15'));
   const state = {genre: ''};
-  const recordsWithNull = Array.from(rows).map((row) =>
-    processRowFull(row, difficulty, songDb, state)
-  );
-  return recordsWithNull.filter((record) => record != null);
+  const records: FullChartRecord[] = [];
+  for (const row of rows) {
+    const record = processRowFull(row, difficulty, songDb, state);
+    if (record != null) {
+      records.push(record);
+    }
+  }
+  return records;
 }

@@ -1,10 +1,19 @@
 import {ChartRecord} from '../common/chart-record';
+import {getChartType} from '../common/chart-type';
 import {Difficulty} from '../common/difficulties';
-import {getPlayerGrade, getPlayerName} from '../common/fetch-score-util';
+import {
+  getAchievement,
+  getChartDifficulty,
+  getChartLevel,
+  getPlayerGrade,
+  getPlayerName,
+  getSongName,
+} from '../common/fetch-score-util';
 import {fetchScores, fetchScoresFull, SELF_SCORE_URLS} from '../common/fetch-self-score';
 import {getGameRegionFromOrigin, isMaimaiNetOrigin} from '../common/game-region';
 import {GameVersion} from '../common/game-version';
 import {getInitialLanguage, Language, saveLanguage} from '../common/lang';
+import {getMinConstant} from '../common/level-helper';
 import {fetchGameVersion, fetchPage} from '../common/net-helpers';
 import {
   getChartRecordFromPlayRecordRow,
@@ -14,7 +23,12 @@ import {
 import {QueryParam} from '../common/query-params';
 import {statusText} from '../common/score-fetch-progress';
 import {getScriptHost} from '../common/script-host';
-import {getSongNickname, getSongNicknameWithChartType} from '../common/song-name-helper';
+import {
+  getLinkGenre,
+  getSongIdx,
+  getSongNickname,
+  getSongNicknameWithChartType,
+} from '../common/song-name-helper';
 import {SongDatabase} from '../common/song-props';
 import {ALLOWED_ORIGINS, fetchAllSongs, getPostMessageFunc, handleError} from '../common/util';
 
@@ -49,35 +63,71 @@ declare global {
   const domCache = new Map<Difficulty, Document>();
 
   async function fetchRecentPlays(
-    domCache: Map<Difficulty, Document>,
     songDb: SongDatabase,
     visitedCharts: Set<string>
   ): Promise<ChartRecord[]> {
-    let dom = domCache.get(null);
-    if (!dom) {
-      dom = await fetchPage(PLAY_HISTORY_PATH);
-      domCache.set(null, dom);
-    }
+    const dom = await fetchPage(PLAY_HISTORY_PATH);
     // Keep only new records
     const rows = Array.from(
       dom.querySelectorAll<HTMLElement>('.main_wrapper .p_10.t_l.f_0.v_b')
     ).filter((row) => getIsNewRecord(row));
     return rows
       .map((row) => getChartRecordFromPlayRecordRow(row, songDb))
-      .filter((record) => {
-        if (record.difficulty === Difficulty.UTAGE) {
+      .filter((r) => {
+        if (r.difficulty === Difficulty.UTAGE) {
           return false;
         }
         // When multiple records of one chart exist, keep the most recent one
-        const key =
-          getSongNicknameWithChartType(record.songName, record.genre, record.chartType) +
-          record.difficulty;
+        const key = getSongNicknameWithChartType(r.songName, r.genre, r.chartType) + r.difficulty;
         if (visitedCharts.has(key)) {
           return false;
         }
         visitedCharts.add(key);
         return true;
       });
+  }
+
+  async function fetchRecordsFromRatingPage(
+    songDb: SongDatabase,
+    visitedCharts: Set<string>
+  ): Promise<ChartRecord[]> {
+    const dom =
+      location.pathname === '/maimai-mobile/home/ratingTargetMusic/'
+        ? document
+        : await fetchPage('/maimai-mobile/home/ratingTargetMusic/');
+    const rows = Array.from(dom.querySelectorAll<HTMLElement>('.main_wrapper.t_c .m_15'));
+    const records: ChartRecord[] = [];
+
+    for (const row of rows) {
+      const idx = getSongIdx(row);
+      if (!idx) {
+        // Note: we cannot use songName to determine whether to skip this row.
+        // as there is a song whose name is empty.
+        continue;
+      }
+      const songName = getSongName(row);
+      const genre = songName === 'Link' ? await getLinkGenre(idx) : '';
+      const difficulty = getChartDifficulty(row);
+      const chartType = getChartType(row);
+
+      // When multiple records of one chart exist, keep the most recent one
+      const key = getSongNicknameWithChartType(songName, genre, chartType) + difficulty;
+      if (visitedCharts.has(key)) {
+        continue;
+      }
+      const level = -getMinConstant(songDb.gameVer, getChartLevel(row));
+      const achievement = getAchievement(row, false);
+      records.push({
+        songName,
+        genre,
+        difficulty,
+        level,
+        chartType,
+        achievement,
+      });
+      visitedCharts.add(key);
+    }
+    return records;
   }
 
   /**
@@ -98,8 +148,13 @@ declare global {
     // Fetch recent plays
     const visitedCharts = new Set<string>();
     send('showProgress', statusText(LANG, null, false));
-    const recentScoreList = await fetchRecentPlays(domCache, songDb, visitedCharts);
+    const recentScoreList = await fetchRecentPlays(songDb, visitedCharts);
     let scoreList = recentScoreList;
+    try {
+      scoreList = scoreList.concat(await fetchRecordsFromRatingPage(songDb, visitedCharts));
+    } catch (e) {
+      console.warn('Failed to fetch rating page', e);
+    }
     // Fetch scores by difficulty
     for (const difficulty of SELF_SCORE_URLS.keys()) {
       send('showProgress', statusText(LANG, difficulty, false));
@@ -138,17 +193,15 @@ declare global {
       analyzeSpan.remove();
     }
     analyzeSpan = document.createElement('span');
-    analyzeSpan.className = 'analyzeLinks';
+    analyzeSpan.className = 'analyzeLinks f_14';
 
     const analyzeRatingLink = document.createElement('a');
-    analyzeRatingLink.className = 'f_14';
     analyzeRatingLink.style.color = '#1477e6';
     analyzeRatingLink.target = 'selfRating';
     analyzeRatingLink.append(UIString[LANG].analyze);
     analyzeRatingLink.href = BASE_URL + '/rating-calculator/?' + urlSearch;
 
     const analyzePlatesLink = document.createElement('a');
-    analyzePlatesLink.className = 'f_14';
     analyzePlatesLink.style.color = '#1477e6';
     analyzePlatesLink.target = 'plateProgress';
     analyzePlatesLink.append(UIString[LANG].plateProgress);
@@ -160,11 +213,14 @@ declare global {
       analyzeSpan.className += ' f_l';
       const playCountDiv = document.querySelector('.m_5.t_r.f_12');
       playCountDiv.insertAdjacentElement('afterbegin', analyzeSpan);
-    } else if (location.pathname.indexOf('/maimai-mobile/home/') >= 0) {
-      const playCommentDiv = document.querySelector('.comment_block.f_l.f_12');
-      playCommentDiv.insertAdjacentElement('afterbegin', analyzeSpan);
     } else {
-      profileBlock.querySelector('.name_block').parentElement.append(analyzeSpan);
+      // If we are at /maimai-mobile/home/, comment block should exist.
+      const playCommentDiv = document.querySelector('.comment_block.f_l.f_12');
+      if (playCommentDiv) {
+        playCommentDiv.insertAdjacentElement('afterbegin', analyzeSpan);
+      } else {
+        profileBlock.querySelector('.name_block').parentElement.append(analyzeSpan);
+      }
     }
   }
 

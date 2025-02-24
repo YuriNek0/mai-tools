@@ -2,7 +2,7 @@ import {getDifficultyByName} from './difficulties';
 import {normalizeSongName} from './song-name-helper';
 
 export function getSongName(row: HTMLElement) {
-  const playRecordSongNameElem = row.querySelector('.basic_block.break') as HTMLElement;
+  const playRecordSongNameElem = row.querySelector('.basic_block.break');
   if (playRecordSongNameElem) {
     // There can be 1 or 2 childNodes depending on whether "CLEAR!" image exists.
     // If "CLEAR!" image exists, it will be the first childNode.
@@ -10,18 +10,16 @@ export function getSongName(row: HTMLElement) {
     return playRecordSongNameElem.childNodes.item(playRecordSongNameElem.childNodes.length - 1)
       .nodeValue;
   }
-  return normalizeSongName(
-    (row.getElementsByClassName('music_name_block')[0] as HTMLElement).innerText
-  );
+  return normalizeSongName(row.querySelector<HTMLElement>('.music_name_block').innerText);
 }
 
 export function getChartLevel(row: HTMLElement) {
-  return (row.getElementsByClassName('music_lv_block')[0] as HTMLElement).innerText;
+  return row.querySelector<HTMLElement>('.music_lv_block').innerText;
 }
 
 export function getChartDifficulty(row: HTMLElement) {
   if (!row.classList.contains('pointer')) {
-    const actualRow = row.querySelector('.pointer') as HTMLElement;
+    const actualRow = row.querySelector<HTMLElement>('.pointer');
     row = actualRow || row;
   }
   const d = row.className.match(/music_([a-z]+)_score_back/)[1];
@@ -30,14 +28,14 @@ export function getChartDifficulty(row: HTMLElement) {
 
 export function getPlayerName(n: HTMLElement) {
   if (n.className.includes('friend_vs_friend_block')) {
-    return (n.querySelector('.t_l') as HTMLElement)?.innerText;
+    return n.querySelector<HTMLElement>('.t_l')?.innerText;
   }
-  return (n.querySelector('.name_block') as HTMLElement)?.innerText;
+  return n.querySelector<HTMLElement>('.name_block')?.innerText;
 }
 
 export function getPlayerGrade(n: Document | HTMLElement) {
-  const gradeImg = n.querySelector('.user_data_block_line ~ img.h_25') as HTMLImageElement;
-  if (gradeImg) {
+  const gradeImg = n.querySelector('.user_data_block_line ~ img.h_25');
+  if (gradeImg instanceof HTMLImageElement) {
     const gradeIdx = gradeImg.src.lastIndexOf('grade_');
     return gradeImg.src.substring(gradeIdx + 6, gradeIdx + 8);
   }
@@ -55,10 +53,10 @@ export function getApFcStatus(row: HTMLElement, isFriendScore = false) {
   const img = isFriendScore
     ? row.querySelector('tr:last-child td:last-child img:nth-child(2)')
     : row.children[0].querySelector('img.f_r:nth-last-of-type(2)');
-  if (!img) {
+  if (!(img instanceof HTMLImageElement)) {
     return null;
   }
-  const statusImgSrc = (img as HTMLImageElement).src.replace(/\?ver=.*$/, '');
+  const statusImgSrc = img.src.replace(/\?ver=.*$/, '');
   const lastUnderscoreIdx = statusImgSrc.lastIndexOf('_');
   const lastDotIdx = statusImgSrc.lastIndexOf('.');
   const lowercaseStatus = statusImgSrc.substring(lastUnderscoreIdx + 1, lastDotIdx);
@@ -72,10 +70,10 @@ export function getSyncStatus(row: HTMLElement, isFriendScore = false) {
   const img = isFriendScore
     ? row.querySelector('tr:last-child td:last-child img:first-child')
     : row.children[0].querySelector('img.f_r:nth-last-of-type(3)');
-  if (!img) {
+  if (!(img instanceof HTMLImageElement)) {
     return null;
   }
-  const statusImgSrc = (img as HTMLImageElement).src.replace(/\?ver=.*$/, '');
+  const statusImgSrc = img.src.replace(/\?ver=.*$/, '');
   const lastUnderscoreIdx = statusImgSrc.lastIndexOf('_');
   const lastDotIdx = statusImgSrc.lastIndexOf('.');
   const lowercaseStatus = statusImgSrc.substring(lastUnderscoreIdx + 1, lastDotIdx);

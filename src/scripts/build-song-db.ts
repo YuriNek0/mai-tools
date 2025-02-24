@@ -1,6 +1,6 @@
 import {ChartType, getChartType} from '../common/chart-type';
 import {getChartDifficulty, getChartLevel, getSongName} from '../common/fetch-score-util';
-import {getSongIdx, isNiconicoLink} from '../common/song-name-helper';
+import {getLinkGenre, getSongIdx, getSongNickname} from '../common/song-name-helper';
 
 async function buildSongDb() {
   const rows = Array.from(document.querySelectorAll('.w_450.m_15.f_0') as NodeListOf<HTMLElement>);
@@ -12,7 +12,8 @@ async function buildSongDb() {
     let lv = getChartLevel(d);
     const c = getChartType(d);
     if (n === 'Link') {
-      n = (await isNiconicoLink(idx)) ? 'Link (nico)' : 'Link (org)';
+      const genre = await getLinkGenre(idx);
+      n = getSongNickname(n, genre);
     } else if (n === '+♂' || n === '39') {
       n = "'" + n;
     }
