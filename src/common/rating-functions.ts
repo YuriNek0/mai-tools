@@ -40,8 +40,9 @@ export function getRating(level: number, achv: number) {
     console.warn(`Could not find rank for achievement ${achievement.toFixed(4)}%`);
     return 0;
   }
+  const positiveLv = Math.abs(level);
   if (rank.maxAchv && rank.maxFactor && rank.maxAchv == achv) {
-    return level * rank.maxAchv * rank.maxFactor;
+    return positiveLv * rank.maxAchv * rank.maxFactor;
   }
-  return level * achievement * rank.factor;
+  return positiveLv * achievement * rank.factor;
 }

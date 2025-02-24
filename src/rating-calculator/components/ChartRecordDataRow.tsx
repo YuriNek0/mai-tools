@@ -52,7 +52,7 @@ export const ChartRecordDataRow = React.memo((props: Props) => {
         case ColumnType.CHART_TYPE:
           return getChartTypeName(record.chartType);
         case ColumnType.LEVEL:
-          return getDisplayLv(record.level, !record.levelIsPrecise);
+          return getDisplayLv(record.level);
         case ColumnType.ACHIEVEMENT:
           return isCandidate && record.rating ? (
             <>

@@ -333,7 +333,6 @@ function readPlayerScoresFromQueryParams(qp: URLSearchParams, songDb: SongDataba
       difficulty,
       chartType,
       level: lv,
-      levelIsPrecise: lv > 0,
       achievement,
     };
   });

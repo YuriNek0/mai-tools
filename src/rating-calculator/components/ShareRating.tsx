@@ -55,7 +55,6 @@ function downloadPlayerScores(ratingData: RatingData) {
       achievement: r.achievement,
       genre: r.genre,
       level: r.level,
-      levelIsPrecise: r.levelIsPrecise,
     };
   });
   const filename = `maimai-scores-${new Date().toISOString()}`;

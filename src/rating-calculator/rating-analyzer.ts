@@ -22,7 +22,6 @@ function getRecordWithRating(
   if (songProps) {
     const lv = songProps.lv[record.difficulty];
     if (typeof lv === 'number') {
-      record.levelIsPrecise = lv > 0;
       record.level = Math.abs(lv);
     }
   }

@@ -113,22 +113,20 @@ export function getNotPlayedCharts(
   for (const s of shuffledSongList) {
     // index 1 means ADVANCED (skip BASIC)
     for (let index = 1; index < s.lv.length; index++) {
-      let lv = s.lv[index];
-      const levelIsPrecise = lv > 0;
-      lv = Math.abs(lv);
+      const level = s.lv[index];
+      const positiveLv = Math.abs(level);
       const key = getSongNicknameWithChartType(s.name === 'Link' ? s.nickname : s.name, '', s.dx);
       // Math.min is hack for newly added Re:MASTER charts.
       // I think the hack is no longer needed as I made parseSongProperties check lv array length,
       // but just want to stay safe.
       const diff = DIFFICULTIES[Math.min(index, DIFFICULTIES.length - 1)];
-      if (playedCharts.has(key + diff) || lv < easiestLv || lv > hardestLv) {
+      if (playedCharts.has(key + diff) || positiveLv < easiestLv || positiveLv > hardestLv) {
         continue; // skip played, too easy, or too hard charts
       }
       const record: ChartRecordWithRating = {
         songName: s.name,
         difficulty: diff,
-        level: lv,
-        levelIsPrecise,
+        level,
         genre: '',
         chartType: s.dx,
         rating: 0,

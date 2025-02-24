@@ -79,16 +79,14 @@ function processRow(
     const chartType = getChartType(row);
     const props = songDb.getSongProperties(songName, state.genre, chartType);
     let level = props ? props.lv[difficulty] : 0;
-    const levelIsPrecise = level > 0;
     if (!level) {
-      level = getMinConstant(songDb.gameVer, getChartLevel(row));
+      level = -getMinConstant(songDb.gameVer, getChartLevel(row));
     }
     return {
       songName,
       genre: state.genre,
       difficulty,
       level,
-      levelIsPrecise,
       chartType,
       achievement,
     };

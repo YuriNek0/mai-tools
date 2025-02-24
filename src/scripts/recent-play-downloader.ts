@@ -2,6 +2,7 @@ import './recent-play-downloader.css';
 
 import domtoimage from 'dom-to-image';
 
+import {ChartRecord} from '../common/chart-record';
 import {ChartType, getChartType} from '../common/chart-type';
 import {fixTimezone, formatDate} from '../common/date-util';
 import {Difficulty, getDifficultyByName, getDifficultyClassName} from '../common/difficulties';
@@ -10,21 +11,21 @@ import {getGameRegionFromOrigin} from '../common/game-region';
 import {getInitialLanguage, Language} from '../common/lang';
 import {getDisplayLv} from '../common/level-helper';
 import {addLvToSongTitle, fetchGameVersion, removeScrollControl} from '../common/net-helpers';
-import {getSongNicknameWithChartType, isNiconicoLinkImg} from '../common/song-name-helper';
+import {getSongGenreFromImg, getSongNicknameWithChartType} from '../common/song-name-helper';
 import {loadSongDatabase, SongDatabase} from '../common/song-props';
 
-type ScoreRecord = {
+interface ScoreRecord extends ChartRecord {
   date: Date;
   songName: string;
   songImgSrc: string;
   chartType: ChartType;
   difficulty: Difficulty;
-  lv: string;
+  // lv: string;
   achievement: number;
   rank: string;
   marks: string;
   isNewRecord: boolean;
-};
+}
 type Options = {
   dates?: Set<string>;
   showAll?: boolean;
@@ -165,7 +166,7 @@ enum Column {
       const cell = ce('td');
       cell.classList.add('songImg');
       cell.style.backgroundImage = `url("${record.songImgSrc}")`;
-      const genre = isNiconicoLinkImg(record.songImgSrc) ? 'niconico' : '';
+      const genre = getSongGenreFromImg(record.songName, record.songImgSrc);
       const nickname = songDb.hasDualCharts(record.songName, genre)
         ? getSongNicknameWithChartType(record.songName, genre, record.chartType)
         : record.songName;
@@ -174,7 +175,7 @@ enum Column {
     },
     [Column.LV]: (record) => {
       const cell = ce('td');
-      cell.append(record.lv);
+      cell.append(getDisplayLv(record.level));
       return cell;
     },
     [Column.ACHV]: (record) => {
@@ -590,13 +591,12 @@ enum Column {
     row: HTMLElement,
     record: Pick<ScoreRecord, 'songName' | 'songImgSrc' | 'chartType' | 'difficulty'>,
     songDb: SongDatabase
-  ): string {
-    const genre =
-      record.songName === 'Link' && isNiconicoLinkImg(record.songImgSrc) ? 'niconico' : '';
+  ): number {
+    const genre = getSongGenreFromImg(record.songName, record.songImgSrc);
     const props = songDb.getSongProperties(record.songName, genre, record.chartType);
-    const lv = props ? getDisplayLv(props.lv[record.difficulty]) : '';
+    const lv = props ? props.lv[record.difficulty] : 0;
     if (lv) {
-      addLvToSongTitle(row, record.difficulty, lv);
+      addLvToSongTitle(row, record.difficulty, getDisplayLv(lv));
     }
     return lv;
   }
@@ -619,12 +619,13 @@ enum Column {
             chartType: getChartType(row),
             difficulty: getDifficulty(row),
           };
-          const lv =
-            baseRecord.difficulty !== Difficulty.UTAGE ? addLvToRow(row, baseRecord, songDb) : '';
+          const level =
+            baseRecord.difficulty !== Difficulty.UTAGE ? addLvToRow(row, baseRecord, songDb) : 0;
           return {
             ...baseRecord,
-            lv,
+            level,
             date: getPlayDate(row),
+            genre: getSongGenreFromImg(baseRecord.songName, baseRecord.songImgSrc),
             achievement: getAchievement(row),
             rank: getRank(row),
             marks: getMarks(row),

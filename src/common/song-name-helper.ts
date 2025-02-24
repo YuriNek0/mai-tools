@@ -58,6 +58,9 @@ export async function isNiconicoLink(idx: string): Promise<boolean> {
   return isNico;
 }
 
-export function isNiconicoLinkImg(imgSrc: string): boolean {
-  return imgSrc.includes('e90f79d9dcff84df');
+export function getSongGenreFromImg(songName: string, imgSrc: string): string {
+  if (songName != 'Link') {
+    return '';
+  }
+  return imgSrc.includes('e90f79d9dcff84df') ? 'niconico' : 'maimai';
 }

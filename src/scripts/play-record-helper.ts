@@ -4,7 +4,7 @@ import {getSongName} from '../common/fetch-score-util';
 import {getGameRegionFromOrigin, isMaimaiNetOrigin} from '../common/game-region';
 import {getDisplayLv} from '../common/level-helper';
 import {addLvToSongTitle, fetchGameVersion} from '../common/net-helpers';
-import {isNiconicoLinkImg} from '../common/song-name-helper';
+import {getSongGenreFromImg} from '../common/song-name-helper';
 import {loadSongDatabase} from '../common/song-props';
 import {fetchSongDetailPage} from '../common/util';
 
@@ -17,7 +17,7 @@ import {fetchSongDetailPage} from '../common/util';
 
     const name = getSongName(d.body);
     const songImg = d.querySelector('img.music_img') as HTMLImageElement;
-    const genre = name === 'Link' && isNiconicoLinkImg(songImg.src) ? 'niconico' : '';
+    const genre = getSongGenreFromImg(name, songImg.src);
     const chartType = getChartType(d.body);
     if (chartType != ChartType.UTAGE) {
       const props = songDb.getSongProperties(name, genre, chartType);

@@ -27,12 +27,9 @@ export function getOfficialLevel(gameVer: GameVersion, level: number): string {
 
 /**
  * Compute the default level based on the official level.
- * Game version before BUDDiES PLUS:
- *   Lv10 => 10.0 (actual range: 10.0 - 10.6)
- *   Lv10+ => 10.7 (actual range: 10.7 - 10.9)
- * Game version after BUDDiES PLUS:
- *   Lv10 => 10.0 (actual range: 10.0 - 10.5)
- *   Lv10+ => 10.6 (actual range: 10.6 - 10.9)
+ * Since BUDDiES PLUS, + starts from x.6. For example,
+ *   "10" contains 10.0 - 10.5, and "10+" contains 10.6 - 10.9
+ * In BUDDiES or older versions, + starts from x.7.
  */
 export function getMinConstant(gameVer: GameVersion, officialLevel: string): number {
   if (!officialLevel) {
@@ -50,13 +47,14 @@ export function getMaxConstant(gameVer: GameVersion, officialLevel: string): num
   return officialLevel.endsWith('+') ? baseLevel + 0.9 : baseLevel + getMaxMinorBeforePlus(gameVer);
 }
 
-export function getDisplayLv(internalLv: number, lvIsEstimate = false): string {
-  // If internalLv is negative, we also consider it estimate.
-  lvIsEstimate = lvIsEstimate || internalLv < 0;
-  if (lvIsEstimate) {
-    return Math.abs(internalLv).toFixed(1) + '~';
+export function getDisplayLv(internalLv: number): string {
+  const lvIsPrecise = internalLv > 0;
+  if (lvIsPrecise) {
+    return internalLv.toFixed(1);
+  } else if (internalLv === 0) {
+    return '?';
   }
-  return internalLv.toFixed(1);
+  return Math.abs(internalLv).toFixed(1) + '~';
 }
 
 export function compareLevels(lv1: number, lv2: number): number {
