@@ -3,56 +3,50 @@ import {Language} from './lang';
 
 const MessagesByLang = {
   [Language.zh_TW]: {
+    done: '✔',
     bscStart: '讀取綠譜成績中…',
-    bscDone: '✔',
     advStart: '讀取黃譜成績中…',
-    advDone: '✔',
     expStart: '讀取紅譜成績中…',
-    expDone: '✔',
     masStart: '讀取紫譜成績中…',
-    masDone: '✔',
     remStart: '讀取白譜成績中…',
-    remDone: '✔',
+    recentStart: '讀取最近遊玩紀錄中…',
   },
   [Language.en_US]: {
+    done: '✔',
     bscStart: 'Loading Basic scores…',
-    bscDone: '✔',
     advStart: 'Loading Advanced scores…',
-    advDone: '✔',
     expStart: 'Loading Expert scores…',
-    expDone: '✔',
     masStart: 'Loading Master scores…',
-    masDone: '✔',
     remStart: 'Loading Re:Master scores…',
-    remDone: '✔',
+    recentStart: 'Loading recent plays…',
   },
   [Language.ko_KR]: {
+    done: '✔',
     bscStart: 'Basic 정확도 불러오는 중…',
-    bscDone: '✔',
     advStart: 'Advanced 정확도 불러오는 중…',
-    advDone: '✔',
     expStart: 'Expert 정확도 불러오는 중…',
-    expDone: '✔',
     masStart: 'Master 정확도 불러오는 중…',
-    masDone: '✔',
     remStart: 'Re:Master 정확도 불러오는 중…',
-    remDone: '✔',
+    recentStart: '최근 플레이 불러오는 중…',
   },
 };
 
 export function statusText(lang: Language, difficulty: Difficulty, end?: boolean): string {
   const UIString = MessagesByLang[lang];
+  if (end) {
+    return UIString.done + '\n';
+  }
   switch (difficulty) {
     case Difficulty.ReMASTER:
-      return end ? UIString.remDone + '\n' : UIString.remStart;
+      return UIString.remStart;
     case Difficulty.MASTER:
-      return end ? UIString.masDone + '\n' : UIString.masStart;
+      return UIString.masStart;
     case Difficulty.EXPERT:
-      return end ? UIString.expDone + '\n' : UIString.expStart;
+      return UIString.expStart;
     case Difficulty.ADVANCED:
-      return end ? UIString.advDone + '\n' : UIString.advStart;
+      return UIString.advStart;
     case Difficulty.BASIC:
-      return end ? UIString.bscDone + '\n' : UIString.bscStart;
+      return UIString.bscStart;
   }
-  return '';
+  return UIString.recentStart;
 }

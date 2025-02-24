@@ -6,6 +6,8 @@ import {calculateDetailedDxStar, getDxStarText} from './dx-star';
 import {getSongGenreFromImg} from './song-name-helper';
 import {SongDatabase} from './song-props';
 
+export const PLAY_HISTORY_PATH = '/maimai-mobile/record/';
+
 export interface PlayRecord extends ChartRecord {
   date: Date;
   songImgSrc: string;
@@ -115,13 +117,16 @@ function getMarks(row: HTMLElement): string {
   return results.join(' ');
 }
 
-function getIsNewRecord(row: HTMLElement): boolean {
+export function getIsNewRecord(row: HTMLElement): boolean {
   return !!row.querySelector(
     '.playlog_achievement_label_block + img.playlog_achievement_newrecord'
   );
 }
 
-function getCharRecordFromRow(row: HTMLElement, songDb: SongDatabase): ChartRecord {
+export function getChartRecordFromPlayRecordRow(
+  row: HTMLElement,
+  songDb: SongDatabase
+): ChartRecord {
   const songName = getSongName(row);
   const chartType = getChartType(row);
   const songImgSrc = getSongImgSrc(row);
@@ -141,7 +146,7 @@ function getCharRecordFromRow(row: HTMLElement, songDb: SongDatabase): ChartReco
 }
 
 export function getPlayRecordFromRow(row: HTMLElement, songDb: SongDatabase): PlayRecord {
-  const baseRecord = getCharRecordFromRow(row, songDb);
+  const baseRecord = getChartRecordFromPlayRecordRow(row, songDb);
 
   return {
     ...baseRecord,

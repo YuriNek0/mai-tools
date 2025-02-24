@@ -5,10 +5,16 @@ import {fetchScores, fetchScoresFull, SELF_SCORE_URLS} from '../common/fetch-sel
 import {getGameRegionFromOrigin, isMaimaiNetOrigin} from '../common/game-region';
 import {GameVersion} from '../common/game-version';
 import {getInitialLanguage, Language, saveLanguage} from '../common/lang';
-import {fetchGameVersion} from '../common/net-helpers';
+import {fetchGameVersion, fetchPage} from '../common/net-helpers';
+import {
+  getChartRecordFromPlayRecordRow,
+  getIsNewRecord,
+  PLAY_HISTORY_PATH,
+} from '../common/play-history';
 import {QueryParam} from '../common/query-params';
 import {statusText} from '../common/score-fetch-progress';
 import {getScriptHost} from '../common/script-host';
+import {getSongNickname, getSongNicknameWithChartType} from '../common/song-name-helper';
 import {SongDatabase} from '../common/song-props';
 import {ALLOWED_ORIGINS, fetchAllSongs, getPostMessageFunc, handleError} from '../common/util';
 
@@ -40,39 +46,78 @@ declare global {
   };
 
   const isOnFriendPage = location.pathname.includes('friend');
+  const domCache = new Map<Difficulty, Document>();
+
+  async function fetchRecentPlays(
+    domCache: Map<Difficulty, Document>,
+    songDb: SongDatabase,
+    visitedCharts: Set<string>
+  ): Promise<ChartRecord[]> {
+    let dom = domCache.get(null);
+    if (!dom) {
+      dom = await fetchPage(PLAY_HISTORY_PATH);
+      domCache.set(null, dom);
+    }
+    // Keep only new records
+    const rows = Array.from(
+      dom.querySelectorAll<HTMLElement>('.main_wrapper .p_10.t_l.f_0.v_b')
+    ).filter((row) => getIsNewRecord(row));
+    return rows
+      .map((row) => getChartRecordFromPlayRecordRow(row, songDb))
+      .filter((record) => {
+        if (record.difficulty === Difficulty.UTAGE) {
+          return false;
+        }
+        // When multiple records of one chart exist, keep the most recent one
+        const key =
+          getSongNicknameWithChartType(record.songName, record.genre, record.chartType) +
+          record.difficulty;
+        if (visitedCharts.has(key)) {
+          return false;
+        }
+        visitedCharts.add(key);
+        return true;
+      });
+  }
 
   /**
    * Load self scores and send them via the callback provided.
-   * @return the Document of BASIC song scores page. (this is later used to get all songs)
+   * @return recent play records
    */
   async function fetchSelfRecords(
     gameVer: GameVersion,
     send: (action: string, payload: unknown) => void,
     fullRecords: boolean = false
-  ): Promise<Document> {
-    let allSongsDom: Document;
+  ): Promise<ChartRecord[]> {
     // Fetch player grade
     const playerGrade = isOnFriendPage ? null : getPlayerGrade(document.body);
     if (playerGrade) {
       send('playerGrade', playerGrade);
     }
-    // Fetch all scores
-    const domCache = new Map<Difficulty, Document>();
-    let scoreList: ChartRecord[] = [];
+    const songDb = new SongDatabase(gameVer, null, false);
+    // Fetch recent plays
+    const visitedCharts = new Set<string>();
+    send('showProgress', statusText(LANG, null, false));
+    const recentScoreList = await fetchRecentPlays(domCache, songDb, visitedCharts);
+    let scoreList = recentScoreList;
+    // Fetch scores by difficulty
     for (const difficulty of SELF_SCORE_URLS.keys()) {
       send('showProgress', statusText(LANG, difficulty, false));
+      const scoresByDifficulty = await (fullRecords ? fetchScoresFull : fetchScores)(
+        difficulty,
+        domCache,
+        songDb
+      );
       scoreList = scoreList.concat(
-        await (fullRecords ? fetchScoresFull : fetchScores)(
-          difficulty,
-          domCache,
-          new SongDatabase(gameVer, null, false)
-        )
+        scoresByDifficulty.filter((r) => {
+          const key = getSongNicknameWithChartType(r.songName, r.genre, r.chartType) + r.difficulty;
+          return !visitedCharts.has(key);
+        })
       );
     }
-    allSongsDom = domCache.get(Difficulty.BASIC);
     send('showProgress', '');
     send('setPlayerScore', scoreList);
-    return allSongsDom;
+    return recentScoreList;
   }
 
   function insertAnalyzeButton(gameVer: GameVersion, playerName: string) {
@@ -131,11 +176,10 @@ declare global {
     const gameVer = await fetchGameVersion(document.body);
     const playerName = isOnFriendPage ? null : getPlayerName(document.body);
     insertAnalyzeButton(gameVer, playerName);
-    let allSongsDom: Promise<Document>;
     if (window.ratingCalcMsgListener) {
       window.removeEventListener('message', window.ratingCalcMsgListener);
     }
-    window.ratingCalcMsgListener = (
+    window.ratingCalcMsgListener = async (
       evt: MessageEvent<string | {action: string; payload?: string | number}>
     ) => {
       console.log(evt.origin, evt.data);
@@ -147,13 +191,25 @@ declare global {
             if (typeof evt.data.payload === 'string') {
               LANG = evt.data.payload as Language;
             }
-            allSongsDom = fetchSelfRecords(gameVer, send);
-            allSongsDom.then(fetchAllSongs).then((songs) => send('allSongs', songs));
+            const recentRecords = await fetchSelfRecords(gameVer, send);
+            const basicSongs = await fetchAllSongs(domCache.get(Difficulty.BASIC));
+            const visitedSongs = new Set<string>();
+            basicSongs.forEach((s) => visitedSongs.add(s.dx + (s.nickname || s.name)));
+            const allSongs = basicSongs.concat(
+              recentRecords
+                .map((r) => ({
+                  dx: r.chartType,
+                  name: r.songName,
+                  nickname: getSongNickname(r.songName, r.genre),
+                }))
+                .filter((s) => !visitedSongs.has(s.dx + (s.nickname || s.name)))
+            );
+            send('allSongs', allSongs);
           } else if (evt.data.action === 'fetchScoresFull') {
             if (typeof evt.data.payload === 'string') {
               LANG = evt.data.payload as Language;
             }
-            allSongsDom = fetchSelfRecords(gameVer, send, true);
+            fetchSelfRecords(gameVer, send, true);
           } else if (evt.data.action === 'saveLanguage') {
             LANG = evt.data.payload as Language;
             saveLanguage(LANG);

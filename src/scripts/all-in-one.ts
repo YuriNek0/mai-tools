@@ -1,6 +1,7 @@
 import {isMaimaiNetOrigin} from '../common/game-region';
 import {getInitialLanguage, Language} from '../common/lang';
 import {removeScrollControl} from '../common/net-helpers';
+import {PLAY_HISTORY_PATH} from '../common/play-history';
 import {handleError} from '../common/util';
 
 (function (d) {
@@ -26,7 +27,7 @@ import {handleError} from '../common/util';
   d.body.oncontextmenu = null;
 
   const path = d.location.pathname;
-  if (path === '/maimai-mobile/record/') {
+  if (path === PLAY_HISTORY_PATH) {
     import('./recent-play-downloader');
   } else if (path.startsWith('/maimai-mobile/record/playlogDetail/')) {
     import('./score-converter');
