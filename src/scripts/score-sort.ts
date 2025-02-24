@@ -258,7 +258,7 @@ type Cache = {
     const elem = getChartLvElem(row);
     if (!elem.dataset['inlv']) {
       elem.dataset['inlv'] = lv.toFixed(1);
-      const t = getDisplayLv(lv);
+      const t = getDisplayLv(lv, isUtage);
       if (t.length > 4) {
         elem.classList.remove('f_14');
         elem.classList.add('f_13');

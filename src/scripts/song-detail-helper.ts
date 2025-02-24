@@ -13,6 +13,7 @@ type Cache = {
 
 (function (d) {
   const cache: Cache = {};
+  const isUtage = d.querySelectorAll('.music_utage_btn').length > 0;
 
   function addDxStarDetail(row: HTMLElement) {
     const label = row.querySelector('img.f_l');
@@ -69,7 +70,7 @@ type Cache = {
   function saveInLv(levelElement: HTMLElement, lv: number) {
     if (!levelElement.dataset['inlv']) {
       levelElement.dataset['inlv'] = lv.toFixed(1);
-      levelElement.innerText = getDisplayLv(lv);
+      levelElement.innerText = getDisplayLv(lv, isUtage);
     }
   }
 
@@ -80,11 +81,7 @@ type Cache = {
     props?: SongProperties | null
   ) {
     const lv = props ? props.lv[lvIndex] : 0;
-    return lv || -getMinConstant(gameVer, getChartLv(levelElement));
-  }
-
-  function getChartLv(levelElement: HTMLElement, key: string = 'lv'): string | undefined {
-    return levelElement.dataset[key];
+    return lv || -getMinConstant(gameVer, levelElement.innerText);
   }
 
   function getSongName(): string {

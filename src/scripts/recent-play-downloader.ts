@@ -2,30 +2,16 @@ import './recent-play-downloader.css';
 
 import domtoimage from 'dom-to-image';
 
-import {ChartRecord} from '../common/chart-record';
-import {ChartType, getChartType} from '../common/chart-type';
-import {fixTimezone, formatDate} from '../common/date-util';
-import {Difficulty, getDifficultyByName, getDifficultyClassName} from '../common/difficulties';
-import {calculateDetailedDxStar, getDxStarText} from '../common/dx-star';
+import {formatDate} from '../common/date-util';
+import {Difficulty, getDifficultyClassName} from '../common/difficulties';
 import {getGameRegionFromOrigin} from '../common/game-region';
 import {getInitialLanguage, Language} from '../common/lang';
 import {getDisplayLv} from '../common/level-helper';
 import {addLvToSongTitle, fetchGameVersion, removeScrollControl} from '../common/net-helpers';
-import {getSongGenreFromImg, getSongNicknameWithChartType} from '../common/song-name-helper';
+import {getPlayRecordFromRow, PlayRecord} from '../common/play-history';
+import {getSongNicknameWithChartType} from '../common/song-name-helper';
 import {loadSongDatabase, SongDatabase} from '../common/song-props';
 
-interface ScoreRecord extends ChartRecord {
-  date: Date;
-  songName: string;
-  songImgSrc: string;
-  chartType: ChartType;
-  difficulty: Difficulty;
-  // lv: string;
-  achievement: number;
-  rank: string;
-  marks: string;
-  isNewRecord: boolean;
-}
 type Options = {
   dates?: Set<string>;
   showAll?: boolean;
@@ -96,20 +82,6 @@ enum Column {
       downloadAsImage: '이미지로 저장하기',
     },
   }[LANG];
-
-  const AP_FC_IMG_NAME_TO_TEXT = new Map([
-    ['fc', 'FC'],
-    ['fcplus', 'FC+'],
-    ['ap', 'AP'],
-    ['applus', 'AP+'],
-  ]);
-
-  const SYNC_IMG_NAME_TO_TEXT = new Map([
-    ['fs', 'FS'],
-    ['fsplus', 'FS+'],
-    ['fsd', 'FSD'],
-    ['fsdplus', 'FSD+'],
-  ]);
   const DATE_CHECKBOX_CLASSNAME = 'dateCheckbox';
   const NEW_RECORD_RADIO_NAME = 'newRecordRadio';
   const SORT_BY_RADIO_NAME = 'sortByRadio';
@@ -155,7 +127,7 @@ enum Column {
 
   const tableBodyCellRenderer: Record<
     Column,
-    (record: ScoreRecord, songDb: SongDatabase) => HTMLElement
+    (record: PlayRecord, songDb: SongDatabase) => HTMLElement
   > = {
     [Column.DATE]: (record) => {
       const cell = ce('td');
@@ -166,16 +138,15 @@ enum Column {
       const cell = ce('td');
       cell.classList.add('songImg');
       cell.style.backgroundImage = `url("${record.songImgSrc}")`;
-      const genre = getSongGenreFromImg(record.songName, record.songImgSrc);
-      const nickname = songDb.hasDualCharts(record.songName, genre)
-        ? getSongNicknameWithChartType(record.songName, genre, record.chartType)
+      const nickname = songDb.hasDualCharts(record.songName, record.genre)
+        ? getSongNicknameWithChartType(record.songName, record.genre, record.chartType)
         : record.songName;
       cell.append(nickname);
       return cell;
     },
     [Column.LV]: (record) => {
       const cell = ce('td');
-      cell.append(getDisplayLv(record.level));
+      cell.append(getDisplayLv(record.level, record.difficulty === Difficulty.UTAGE));
       return cell;
     },
     [Column.ACHV]: (record) => {
@@ -194,99 +165,6 @@ enum Column {
     },
   };
 
-  function getPlayDate(row: HTMLElement) {
-    const playDateText = (row.querySelector('.sub_title').children[1] as HTMLElement).innerText;
-    const m = playDateText.match(/(\d+)\/(\d+)\/(\d+) (\d+):(\d+)/);
-    const japanDt = new Date(
-      parseInt(m[1]),
-      parseInt(m[2]) - 1,
-      parseInt(m[3]),
-      parseInt(m[4]),
-      parseInt(m[5])
-    );
-    return fixTimezone(japanDt);
-  }
-
-  function getSongName(row: HTMLElement) {
-    try {
-      return Array.from((row.querySelector('.m_5.p_5.f_13') as HTMLElement).childNodes).find(
-        (node) => node instanceof Text
-      ).textContent;
-    } catch (e) {
-      console.log(e);
-      console.log(row);
-      return '';
-    }
-  }
-
-  function getSongImgSrc(row: HTMLElement): string {
-    const img = row.querySelector('.music_img') as HTMLImageElement;
-    return img ? img.src : '';
-  }
-
-  function getDifficulty(row: HTMLElement) {
-    const recordBody = row.children[1];
-    const cn = recordBody.className;
-    let diff = cn.substring(cn.indexOf('_') + 1, cn.lastIndexOf('_'));
-    return getDifficultyByName(diff);
-  }
-
-  function getAchievement(row: HTMLElement) {
-    return parseFloat((row.querySelector('.playlog_achievement_txt') as HTMLElement).innerText);
-  }
-
-  function getDxStar(row: HTMLElement): string {
-    const dxStarIndex = calculateDetailedDxStar(row);
-    return getDxStarText(dxStarIndex);
-  }
-
-  function getRank(row: HTMLElement): string {
-    const rankImgSrc = (row.querySelector('img.playlog_scorerank') as HTMLImageElement).src.replace(
-      /\?ver=.*$/,
-      ''
-    );
-    return rankImgSrc
-      .substring(rankImgSrc.lastIndexOf('/') + 1, rankImgSrc.lastIndexOf('.'))
-      .replace('plus', '+')
-      .toUpperCase();
-  }
-
-  function getMarks(row: HTMLElement): string {
-    const results = [];
-    // FC/AP
-    const stampImgs = row.querySelectorAll(
-      '.playlog_result_innerblock > img'
-    ) as NodeListOf<HTMLImageElement>;
-    const fcapSrc = stampImgs[0].src.replace(/\?ver=.*$/, '');
-    const fcapImgName = fcapSrc.substring(fcapSrc.lastIndexOf('/') + 1, fcapSrc.lastIndexOf('.'));
-    if (AP_FC_IMG_NAME_TO_TEXT.has(fcapImgName)) {
-      results.push(AP_FC_IMG_NAME_TO_TEXT.get(fcapImgName));
-    }
-
-    // SYNC
-    const fullSyncSrc = stampImgs[1].src.replace(/\?ver=.*$/, '');
-    const fullSyncImgName = fullSyncSrc.substring(
-      fullSyncSrc.lastIndexOf('/') + 1,
-      fullSyncSrc.lastIndexOf('.')
-    );
-    if (SYNC_IMG_NAME_TO_TEXT.has(fullSyncImgName)) {
-      results.push(SYNC_IMG_NAME_TO_TEXT.get(fullSyncImgName));
-    }
-
-    // DX Star
-    const dxStar = getDxStar(row);
-    if (dxStar) {
-      results.push(dxStar);
-    }
-    return results.join(' ');
-  }
-
-  function getIsNewRecord(row: HTMLElement) {
-    return !!row.querySelector(
-      '.playlog_achievement_label_block + img.playlog_achievement_newrecord'
-    );
-  }
-
   function renderScoreHeadRow(columns: ReadonlyArray<Column>) {
     const tr = ce('tr');
     tr.classList.add(SCORE_RECORD_ROW_CLASSNAME);
@@ -301,7 +179,7 @@ enum Column {
 
   function renderScoreRow(
     columns: ReadonlyArray<Column>,
-    record: ScoreRecord,
+    record: PlayRecord,
     songDb: SongDatabase
   ) {
     const tr = ce('tr');
@@ -318,7 +196,7 @@ enum Column {
   }
 
   function renderTopScores(
-    records: ReadonlyArray<ScoreRecord>,
+    records: ReadonlyArray<PlayRecord>,
     songDb: SongDatabase,
     container: HTMLElement,
     thead: HTMLTableSectionElement,
@@ -368,7 +246,7 @@ enum Column {
     return {dates: selectedDates, showAll: showAllRecords, olderFirst};
   }
 
-  function filterRecords(allRecords: ReadonlyArray<ScoreRecord>, options: Options): ScoreRecord[] {
+  function filterRecords(allRecords: ReadonlyArray<PlayRecord>, options: Options): PlayRecord[] {
     let records = allRecords.slice();
     console.log(options);
     if (options.dates) {
@@ -528,7 +406,7 @@ enum Column {
   }
 
   function createOutputElement(
-    allRecords: ReadonlyArray<ScoreRecord>,
+    allRecords: ReadonlyArray<PlayRecord>,
     songDb: SongDatabase,
     insertBefore: HTMLElement
   ) {
@@ -587,20 +465,6 @@ enum Column {
     insertBefore.insertAdjacentElement('beforebegin', dv);
   }
 
-  function addLvToRow(
-    row: HTMLElement,
-    record: Pick<ScoreRecord, 'songName' | 'songImgSrc' | 'chartType' | 'difficulty'>,
-    songDb: SongDatabase
-  ): number {
-    const genre = getSongGenreFromImg(record.songName, record.songImgSrc);
-    const props = songDb.getSongProperties(record.songName, genre, record.chartType);
-    const lv = props ? props.lv[record.difficulty] : 0;
-    if (lv) {
-      addLvToSongTitle(row, record.difficulty, getDisplayLv(lv));
-    }
-    return lv;
-  }
-
   const titleImg = d.querySelector('.main_wrapper > img.title') as HTMLImageElement;
   if (titleImg) {
     (async () => {
@@ -612,25 +476,16 @@ enum Column {
         const gameVer = await fetchGameVersion(d.body);
         const gameRegion = getGameRegionFromOrigin(d.location.origin);
         const songDb = await loadSongDatabase(gameVer, gameRegion);
-        const records: ScoreRecord[] = rows.map((row) => {
-          const baseRecord = {
-            songName: getSongName(row),
-            songImgSrc: getSongImgSrc(row),
-            chartType: getChartType(row),
-            difficulty: getDifficulty(row),
-          };
-          const level =
-            baseRecord.difficulty !== Difficulty.UTAGE ? addLvToRow(row, baseRecord, songDb) : 0;
-          return {
-            ...baseRecord,
-            level,
-            date: getPlayDate(row),
-            genre: getSongGenreFromImg(baseRecord.songName, baseRecord.songImgSrc),
-            achievement: getAchievement(row),
-            rank: getRank(row),
-            marks: getMarks(row),
-            isNewRecord: getIsNewRecord(row),
-          };
+        const records: PlayRecord[] = rows.map((row) => {
+          const record = getPlayRecordFromRow(row, songDb);
+          if (record.level) {
+            addLvToSongTitle(
+              row,
+              record.difficulty,
+              getDisplayLv(record.level, record.difficulty === Difficulty.UTAGE)
+            );
+          }
+          return record;
         });
         createOutputElement(records, songDb, titleImg);
       } catch (e) {

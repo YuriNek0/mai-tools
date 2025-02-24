@@ -34,6 +34,8 @@ export function getOfficialLevel(gameVer: GameVersion, level: number): string {
 export function getMinConstant(gameVer: GameVersion, officialLevel: string): number {
   if (!officialLevel) {
     return MIN_LEVEL;
+  } else if (officialLevel.endsWith('?')) {
+    return getMinConstant(gameVer, officialLevel.substring(0, officialLevel.length - 1));
   }
   const baseLevel = parseInt(officialLevel);
   return officialLevel.endsWith('+') ? baseLevel + getMinMinorOfPlus(gameVer) : baseLevel;
@@ -47,14 +49,18 @@ export function getMaxConstant(gameVer: GameVersion, officialLevel: string): num
   return officialLevel.endsWith('+') ? baseLevel + 0.9 : baseLevel + getMaxMinorBeforePlus(gameVer);
 }
 
-export function getDisplayLv(internalLv: number): string {
+export function getDisplayLv(internalLv: number, isUtage: boolean): string {
+  const absLv = Math.abs(internalLv);
+  if (isUtage) {
+    return getOfficialLevel(GameVersion.BUDDiES_PLUS, absLv) + '?';
+  }
   const lvIsPrecise = internalLv > 0;
   if (lvIsPrecise) {
-    return internalLv.toFixed(1);
-  } else if (internalLv === 0) {
+    return absLv.toFixed(1);
+  } else if (absLv === 0) {
     return '?';
   }
-  return Math.abs(internalLv).toFixed(1) + '~';
+  return absLv.toFixed(1) + '~';
 }
 
 export function compareLevels(lv1: number, lv2: number): number {

@@ -1,7 +1,7 @@
 import React, {ReactNode, useCallback} from 'react';
 
 import {getChartTypeName} from '../../common/chart-type';
-import {getDifficultyClassName} from '../../common/difficulties';
+import {Difficulty, getDifficultyClassName} from '../../common/difficulties';
 import {getDisplayLv} from '../../common/level-helper';
 import {getRankTitle} from '../../common/rank-functions';
 import {getSongNickname, RATING_TARGET_SONG_NAME_PREFIX} from '../../common/song-name-helper';
@@ -52,7 +52,7 @@ export const ChartRecordDataRow = React.memo((props: Props) => {
         case ColumnType.CHART_TYPE:
           return getChartTypeName(record.chartType);
         case ColumnType.LEVEL:
-          return getDisplayLv(record.level);
+          return getDisplayLv(record.level, record.difficulty === Difficulty.UTAGE);
         case ColumnType.ACHIEVEMENT:
           return isCandidate && record.rating ? (
             <>

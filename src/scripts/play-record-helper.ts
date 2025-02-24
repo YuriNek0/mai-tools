@@ -22,7 +22,7 @@ import {fetchSongDetailPage} from '../common/util';
     if (chartType != ChartType.UTAGE) {
       const props = songDb.getSongProperties(name, genre, chartType);
       if (props) {
-        return getDisplayLv(props.lv[diff]);
+        return getDisplayLv(props.lv[diff], diff === Difficulty.UTAGE);
       }
     }
 
