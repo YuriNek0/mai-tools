@@ -89,8 +89,8 @@ type Cache = {
   }
 
   function getSongGenre(): string {
-    const elem = document.querySelector('.blue');
-    return elem instanceof HTMLElement ? elem.innerText : '';
+    const elem = document.querySelector('.t_r.blue');
+    return elem != null ? elem.textContent.trim() : '';
   }
 
   function getLevelTable(): NodeList {
