@@ -59,7 +59,7 @@ export async function getLinkGenre(idx: string): Promise<string> {
   } else {
     cachedLinkIdx.original = idx;
   }
-  return isNico ? 'nicknico' : 'maimai';
+  return isNico ? 'niconico' : 'maimai';
 }
 
 export function getSongGenreFromImg(songName: string, imgSrc: string): string {
