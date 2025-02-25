@@ -202,7 +202,6 @@ export const CandidateChartRecords = ({
         ) : null}
       </div>
       <ChartRecordsTable
-        songDatabase={songDatabase}
         tableClassname="candidateTable"
         records={candidatesToShow}
         sortBy={handleSortBy}

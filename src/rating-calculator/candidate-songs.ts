@@ -8,7 +8,7 @@ import {
   RANK_SSS_PLUS,
 } from '../common/rank-functions';
 import {calculateRatingRange} from '../common/rating-functions';
-import {getSongNicknameWithChartType} from '../common/song-name-helper';
+import {getSheetIdForDxRatingNet} from '../common/song-name-helper';
 import {SongProperties} from '../common/song-props';
 import {compareCandidate, compareSongsByLevel} from './record-comparator';
 import {ChartRecordWithRating} from './types';
@@ -96,8 +96,8 @@ export function getNotPlayedCharts(
 ) {
   const playedCharts = new Set<string>();
   for (const r of records) {
-    const key = getSongNicknameWithChartType(r.songName, r.genre, r.chartType);
-    playedCharts.add(key + r.difficulty);
+    const key = getSheetIdForDxRatingNet(r.songName, r.genre, r.chartType, r.difficulty);
+    playedCharts.add(key);
   }
   const maxRating = records.length ? Math.ceil(records[0].rating) : 0;
   const hardestLv = requiredLv
@@ -115,12 +115,12 @@ export function getNotPlayedCharts(
     for (let index = 1; index < s.lv.length; index++) {
       const level = s.lv[index];
       const positiveLv = Math.abs(level);
-      const key = getSongNicknameWithChartType(s.name === 'Link' ? s.nickname : s.name, '', s.dx);
       // Math.min is hack for newly added Re:MASTER charts.
       // I think the hack is no longer needed as I made parseSongProperties check lv array length,
       // but just want to stay safe.
       const diff = DIFFICULTIES[Math.min(index, DIFFICULTIES.length - 1)];
-      if (playedCharts.has(key + diff) || positiveLv < easiestLv || positiveLv > hardestLv) {
+      const key = getSheetIdForDxRatingNet(s.name, s.genre, s.dx, diff);
+      if (playedCharts.has(key) || positiveLv < easiestLv || positiveLv > hardestLv) {
         continue; // skip played, too easy, or too hard charts
       }
       const record: ChartRecordWithRating = {

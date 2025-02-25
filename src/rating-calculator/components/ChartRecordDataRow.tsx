@@ -5,21 +5,13 @@ import {Difficulty, getDifficultyClassName} from '../../common/difficulties';
 import {getDisplayLv} from '../../common/level-helper';
 import {getRankTitle} from '../../common/rank-functions';
 import {getSongNickname, RATING_TARGET_SONG_NAME_PREFIX} from '../../common/song-name-helper';
-import {SongDatabase} from '../../common/song-props';
 import {getArcadeSongLink} from '../../common/wiki-link';
 import {ChartRecordWithRating, ColumnType} from '../types';
 import {ChartRecordRow} from './ChartRecordRow';
 
-function getSongNameCell(
-  record: ChartRecordWithRating,
-  songDatabase: SongDatabase,
-  isCandidate?: boolean
-): ReactNode {
+function getSongNameCell(record: ChartRecordWithRating, isCandidate?: boolean): ReactNode {
   const prefix = isCandidate && record.isTarget ? RATING_TARGET_SONG_NAME_PREFIX : '';
-  const hasDualCharts = songDatabase.hasDualCharts(record.songName, record.genre);
-  const displayName = hasDualCharts
-    ? prefix + getSongNickname(record.songName, record.genre)
-    : prefix + record.songName;
+  const displayName = prefix + getSongNickname(record.songName, record.genre);
 
   return (
     <a
@@ -33,7 +25,6 @@ function getSongNameCell(
 }
 
 interface Props {
-  songDatabase: SongDatabase;
   record: ChartRecordWithRating;
   columns: ReadonlyArray<ColumnType>;
   index: number;
@@ -41,14 +32,14 @@ interface Props {
 }
 
 export const ChartRecordDataRow = React.memo((props: Props) => {
-  const {record, index, columns, songDatabase, isCandidate} = props;
+  const {record, index, columns, isCandidate} = props;
   const renderColumn = useCallback(
     (c: ColumnType) => {
       switch (c) {
         case ColumnType.NO:
           return index.toString();
         case ColumnType.SONG_TITLE:
-          return getSongNameCell(record, songDatabase, isCandidate);
+          return getSongNameCell(record, isCandidate);
         case ColumnType.CHART_TYPE:
           return getChartTypeName(record.chartType);
         case ColumnType.LEVEL:
@@ -83,7 +74,7 @@ export const ChartRecordDataRow = React.memo((props: Props) => {
           return Math.floor(record.rating).toString();
       }
     },
-    [songDatabase, index, record, isCandidate]
+    [index, record, isCandidate]
   );
   return (
     <ChartRecordRow

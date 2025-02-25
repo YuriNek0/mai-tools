@@ -1,13 +1,11 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
-import {getChartTypeNameForDxRatingNet} from '../../common/chart-type';
-import {getDifficultyNameForDxRatingNet} from '../../common/difficulties';
 import {GameRegion} from '../../common/game-region';
 import {GameVersion} from '../../common/game-version';
 import {Language} from '../../common/lang';
 import {useLanguage} from '../../common/lang-react';
 import {QueryParam} from '../../common/query-params';
-import {getSongNicknameForDxRatingNet} from '../../common/song-name-helper';
+import {getSheetIdForDxRatingNet} from '../../common/song-name-helper';
 import {SongDatabase} from '../../common/song-props';
 import {RatingData} from '../types';
 
@@ -68,11 +66,9 @@ function downloadAsDxRatingNetJson(ratingData: RatingData, onlyTopRecords: boole
         .concat(ratingData.oldChartRecords.slice(0, ratingData.oldTopChartsCount))
     : ratingData.newChartRecords.concat(ratingData.oldChartRecords);
   const sheets = recordsToDownload.map((r) => {
-    const songName = getSongNicknameForDxRatingNet(r.songName, r.genre);
-    const chartType = getChartTypeNameForDxRatingNet(r.chartType);
-    const difficulty = getDifficultyNameForDxRatingNet(r.difficulty);
+    const sheetId = getSheetIdForDxRatingNet(r.songName, r.genre, r.chartType, r.difficulty);
     return {
-      sheetId: `${songName}__dxrt__${chartType}__dxrt__${difficulty}`,
+      sheetId,
       achievementRate: r.achievement,
     };
   });

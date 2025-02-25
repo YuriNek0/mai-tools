@@ -1,12 +1,10 @@
 import React from 'react';
 
-import {SongDatabase} from '../../common/song-props';
 import {ChartRecordWithRating, ColumnType} from '../types';
 import {ChartRecordDataRow} from './ChartRecordDataRow';
 import {ChartRecordHeadRow} from './ChartRecordHeadRow';
 
 interface Props {
-  songDatabase: SongDatabase;
   columns: ReadonlyArray<ColumnType>;
   records: ReadonlyArray<ChartRecordWithRating>;
   tableClassname: string;
@@ -15,7 +13,7 @@ interface Props {
 }
 export class ChartRecordsTable extends React.PureComponent<Props> {
   render() {
-    const {columns, sortBy, records, songDatabase, isCandidate} = this.props;
+    const {columns, sortBy, records, isCandidate} = this.props;
     let {tableClassname} = this.props;
     tableClassname += ' songRecordTable';
     return (
@@ -28,7 +26,6 @@ export class ChartRecordsTable extends React.PureComponent<Props> {
             index = r.order || index + 1;
             return (
               <ChartRecordDataRow
-                songDatabase={songDatabase}
                 record={r}
                 columns={columns}
                 key={index}

@@ -1,15 +1,15 @@
-import {GameVersion} from '../game-version';
 import {GameRegion} from '../game-region';
+import {GameVersion} from '../game-version';
+import {getGenreFromNickname} from '../song-name-helper';
 import {SongProperties} from '../song-props';
 
 export class MaiToolsApi {
-  constructor(
-    private readonly maiToolsBaseUrl: string,
-  ) {
-  }
+  constructor(private readonly maiToolsBaseUrl: string) {}
 
   async fetchChartLevelOverrides(gameVer: GameVersion): Promise<SongProperties[]> {
-    const data = await fetchJson(`${this.maiToolsBaseUrl}/data/chart-levels/version${gameVer}.json`);
+    const data = await fetchJson(
+      `${this.maiToolsBaseUrl}/data/chart-levels/version${gameVer}.json`
+    );
     const output: SongProperties[] = [];
     ['standard', 'dx'].forEach((chartType, index) => {
       if (!data[chartType]) {
@@ -17,7 +17,8 @@ export class MaiToolsApi {
       }
       for (const name of Object.keys(data[chartType])) {
         output.push({
-          name: name,
+          name,
+          genre: getGenreFromNickname(name),
           dx: index,
           debut: gameVer,
           lv: data[chartType][name],
@@ -29,7 +30,7 @@ export class MaiToolsApi {
 
   async fetchRegionOverrides(
     region: GameRegion
-  ): Promise<Pick<SongProperties, 'name' | 'dx' | 'debut'>[]> {
+  ): Promise<Pick<SongProperties, 'name' | 'dx' | 'debut' | 'ico'>[]> {
     const data = await fetchJson(`${this.maiToolsBaseUrl}/data/song-info/${region}.json`);
     return ['standard', 'dx'].flatMap((chartType, index) => {
       const songsByVer: Record<string, string[]> = data[chartType];
@@ -41,14 +42,15 @@ export class MaiToolsApi {
         const songList = songsByVer[version];
         const icoList = icosByVer[version] || [];
         const versionInt = parseInt(version);
-        return songList.map((song, i) =>
-          ({
-            name: song,
+        return songList.map((name, i) => {
+          const song: Pick<SongProperties, 'name' | 'dx' | 'debut' | 'ico'> = {
+            name,
             dx: index,
             debut: versionInt,
             ico: icoList.at(i),
-          })
-        );
+          };
+          return song;
+        });
       });
     });
   }

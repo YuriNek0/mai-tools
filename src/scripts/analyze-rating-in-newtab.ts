@@ -23,12 +23,7 @@ import {
 import {QueryParam} from '../common/query-params';
 import {statusText} from '../common/score-fetch-progress';
 import {getScriptHost} from '../common/script-host';
-import {
-  fetchSongGenre,
-  getSongIdx,
-  getSongNickname,
-  getSongNicknameWithChartType,
-} from '../common/song-name-helper';
+import {fetchSongGenre, getSongIdx, getSongNicknameWithChartType} from '../common/song-name-helper';
 import {SongDatabase} from '../common/song-props';
 import {ALLOWED_ORIGINS, fetchAllSongs, getPostMessageFunc, handleError} from '../common/util';
 
@@ -248,18 +243,23 @@ declare global {
               LANG = evt.data.payload as Language;
             }
             const recentRecords = await fetchSelfRecords(gameVer, send);
-            const basicSongs = await fetchAllSongs(domCache.get(Difficulty.BASIC));
+            // domCache should be populated by fetchSelfRecords
+            const allSongs = await fetchAllSongs(domCache.get(Difficulty.BASIC));
             const visitedSongs = new Set<string>();
-            basicSongs.forEach((s) => visitedSongs.add(s.dx + (s.nickname || s.name)));
-            const allSongs = basicSongs.concat(
-              recentRecords
-                .map((r) => ({
+            allSongs.forEach((s) =>
+              visitedSongs.add(getSongNicknameWithChartType(s.name, s.genre, s.dx))
+            );
+            for (const r of recentRecords) {
+              if (
+                !visitedSongs.has(getSongNicknameWithChartType(r.songName, r.genre, r.chartType))
+              ) {
+                allSongs.push({
                   dx: r.chartType,
                   name: r.songName,
-                  nickname: getSongNickname(r.songName, r.genre),
-                }))
-                .filter((s) => !visitedSongs.has(s.dx + (s.nickname || s.name)))
-            );
+                  genre: r.genre,
+                });
+              }
+            }
             send('allSongs', allSongs);
           } else if (evt.data.action === 'fetchScoresFull') {
             if (typeof evt.data.payload === 'string') {

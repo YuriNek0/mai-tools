@@ -100,7 +100,6 @@ export const TopChartRecords = (props: Props) => {
         </div>
       )}
       <ChartRecordsTable
-        songDatabase={songDatabase}
         columns={COLUMNS}
         tableClassname="topRecordTable"
         records={records}

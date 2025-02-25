@@ -1,7 +1,7 @@
 import {addToCache, cached, expireCache} from '../cache';
 import {ChartType} from '../chart-type';
 import {GameVersion, RATING_CALCULATOR_SUPPORTED_VERSIONS} from '../game-version';
-import {getSongNickname, normalizeSongName} from '../song-name-helper';
+import {getGenreFromNickname, normalizeSongName} from '../song-name-helper';
 import {SongProperties} from '../song-props';
 
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 1 day
@@ -24,6 +24,10 @@ const enum MagicFormat {
 interface MagicSauce {
   sauce: string;
   format: MagicFormat;
+}
+
+interface OldSongProperties extends SongProperties {
+  nickname?: string;
 }
 
 const MagicSauceByVersion: Record<GameVersion, MagicSauce> = {
@@ -121,22 +125,19 @@ export class MagicApi {
       }
       const props: SongProperties = {
         name: normalizeSongName(song.title),
+        genre: song.category,
         dx: chartType === 'dx' ? ChartType.DX : ChartType.STANDARD,
         debut: debutVer,
         lv: sheetList.map((sheet) =>
           sheet.internalLevel ? sheet.internalLevelValue : -sheet.levelValue
         ),
       };
-      const nickname = getSongNickname(song.title, song.category);
-      if (nickname !== song.title) {
-        props.nickname = nickname;
-      }
       propsList.push(props);
     });
     return propsList;
   }
 
-  private async fetchMagic(gameVer: GameVersion): Promise<SongProperties[]> {
+  private async fetchMagic(gameVer: GameVersion): Promise<OldSongProperties[]> {
     const sauce = MagicSauceByVersion[gameVer];
     if (!sauce) {
       return this.fetchMagic(FALLBACK_VERSION);
@@ -156,13 +157,12 @@ export class MagicApi {
       );
       return songs;
     } else {
-      // No conversion required for MagicFormat.MAI_TOOLS
       return await res.json();
     }
   }
 
   async loadMagic(gameVer: GameVersion): Promise<SongProperties[]> {
-    const songs = await cached<SongProperties[]>(
+    const songs = await cached<OldSongProperties[]>(
       CACHE_KEY_PREFIX + gameVer,
       CACHE_DURATION,
       async (expiredValue) => {
@@ -175,12 +175,18 @@ export class MagicApi {
           return expiredValue;
         }
       },
-      () => this.fetchMagic(gameVer).catch(() => [])
+      () => this.fetchMagic(gameVer).catch<SongProperties[]>(() => [])
     );
     if (!songs.length) {
       expireCache(CACHE_KEY_PREFIX + gameVer);
     }
     OLD_KEYS_TO_CLEANUP.map(expireCache);
+    songs.forEach((s) => {
+      if (!s.genre) {
+        // Convert nickname to genre
+        s.genre = getGenreFromNickname(s.nickname || s.name);
+      }
+    });
     return songs;
   }
 }

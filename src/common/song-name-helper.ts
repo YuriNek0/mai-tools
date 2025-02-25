@@ -1,4 +1,5 @@
-import {ChartType, getChartTypeName} from './chart-type';
+import {ChartType, getChartTypeName, getChartTypeNameForDxRatingNet} from './chart-type';
+import {Difficulty, getDifficultyNameForDxRatingNet} from './difficulties';
 import {fetchSongDetailPage} from './util';
 
 export const RATING_TARGET_SONG_NAME_PREFIX = '▶ ';
@@ -25,11 +26,20 @@ export function getSongNickname(name: string, genre: string) {
   return name;
 }
 
-export function getSongNicknameForDxRatingNet(name: string, genre: string) {
-  if (name === 'Link') {
-    return genre.includes('niconico') ? 'Link (2)' : 'Link';
+export function getGenreFromNickname(nickname: string): string {
+  if (nickname === 'Link (nico)') {
+    return 'niconico';
+  } else if (nickname === 'Link (org)') {
+    return 'maimai';
   }
-  return name;
+  return '';
+}
+
+export function getSheetIdForDxRatingNet(name: string, genre: string, c: ChartType, d: Difficulty) {
+  const songName = name !== 'Link' ? name : genre.includes('niconico') ? 'Link (2)' : 'Link';
+  const chartType = getChartTypeNameForDxRatingNet(c);
+  const difficulty = getDifficultyNameForDxRatingNet(d);
+  return `${songName}__dxrt__${chartType}__dxrt__${difficulty}`;
 }
 
 export function getSongNicknameWithChartType(

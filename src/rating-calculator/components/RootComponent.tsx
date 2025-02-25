@@ -329,7 +329,7 @@ function readPlayerScoresFromQueryParams(qp: URLSearchParams, songDb: SongDataba
     const lv = props.lv[difficulty];
     return {
       songName: props.name,
-      genre: props.nickname === 'Link (nico)' ? 'niconico' : '',
+      genre: props.genre,
       difficulty,
       chartType,
       level: lv,

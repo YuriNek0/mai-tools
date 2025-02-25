@@ -10,7 +10,7 @@ import {getSongNickname} from './song-name-helper';
 export interface BasicSongProps {
   dx: ChartType;
   name: string;
-  nickname?: string | null;
+  genre: string;
   ico?: string;
 }
 
@@ -34,7 +34,7 @@ export class SongDatabase {
       return;
     }
     const map = song.dx === ChartType.DX ? this.dxMap : this.standardMap;
-    const key = song.name === 'Link' ? song.nickname : song.name;
+    const key = getSongNickname(song.name, song.genre);
     if (song.ico) {
       this.nameByIco.set(song.ico, key);
     }
@@ -53,7 +53,7 @@ export class SongDatabase {
    */
   updateSong(update: Partial<SongProperties>): boolean {
     const map = update.dx === ChartType.DX ? this.dxMap : this.standardMap;
-    const key = map.has(update.name) ? update.name : update.nickname;
+    const key = map.has(update.name) ? update.name : getSongNickname(update.name, update.genre);
     const existing = map.get(key);
     if (!existing) {
       return false;
@@ -79,16 +79,9 @@ export class SongDatabase {
     this.standardMap.delete(name);
   }
 
-  hasDualCharts(songName: string, genre: string): boolean {
+  hasDualCharts(songName: string): boolean {
     if (songName === 'Link') return true;
-    if (this.dxMap.has(songName) && this.standardMap.has(songName)) {
-      return true;
-    }
-    const nickname = getSongNickname(songName, genre);
-    if (nickname) {
-      return this.dxMap.has(nickname) && this.standardMap.has(nickname);
-    }
-    return false;
+    return this.dxMap.has(songName) && this.standardMap.has(songName);
   }
 
   getSongPropsByIco(ico: string, chartType: ChartType) {
@@ -126,8 +119,7 @@ export class SongDatabase {
   getPropsForSongs(songs: ReadonlyArray<BasicSongProps>): SongProperties[] {
     return songs
       .map((s) => {
-        const props =
-          this.getSongProperties(s.nickname, '', s.dx) || this.getSongProperties(s.name, '', s.dx);
+        const props = this.getSongProperties(s.name, s.genre, s.dx);
         if (!props) {
           console.warn('Could not find song properties for', s);
         }

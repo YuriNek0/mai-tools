@@ -138,7 +138,7 @@ enum Column {
       const cell = ce('td');
       cell.classList.add('songImg');
       cell.style.backgroundImage = `url("${record.songImgSrc}")`;
-      const nickname = songDb.hasDualCharts(record.songName, record.genre)
+      const nickname = songDb.hasDualCharts(record.songName)
         ? getSongNicknameWithChartType(record.songName, record.genre, record.chartType)
         : record.songName;
       cell.append(nickname);
