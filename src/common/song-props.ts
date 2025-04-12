@@ -14,9 +14,15 @@ export interface BasicSongProps {
   ico?: string;
 }
 
+export interface RegionOverride {
+  debut: number;
+  lv: number[];
+}
+
 export interface SongProperties extends BasicSongProps {
   debut: number; // from 0 to latest version number
   lv: ReadonlyArray<number>;
+  regionOverrides?: Record<string, RegionOverride>;
 }
 
 export class SongDatabase {
@@ -44,6 +50,17 @@ export class SongDatabase {
       );
       console.warn(`Will ignore ${song}`);
       return;
+    }
+    if (song.regionOverrides && song.regionOverrides[this.region]) {
+      const regionOverride = song.regionOverrides[this.region];
+      if (regionOverride.debut >= 0) {
+        song.debut = regionOverride.debut;
+      }
+      if (Array.isArray(regionOverride.lv)) {
+        song.lv = song.lv.map((lvItem, idx) =>
+          regionOverride.lv[idx] > 0 ? regionOverride.lv[idx] : lvItem
+        );
+      }
     }
     map.set(key, song);
   }
