@@ -8,11 +8,8 @@ import {
   isMaimaiNetOrigin,
   MAIMAI_NET_ORIGINS,
 } from '../../common/game-region';
-import {
-  GameVersion,
-  RATING_CALCULATOR_SUPPORTED_VERSIONS,
-  validateGameVersion,
-} from '../../common/game-version';
+import {GameVersion, validateGameVersion} from '../../common/game-version';
+import {RATING_CALCULATOR_SUPPORTED_VERSIONS} from '../../common/infra/magic-api';
 import {getInitialLanguage, Language, saveLanguage} from '../../common/lang';
 import {LangContext} from '../../common/lang-react';
 import {QueryParam} from '../../common/query-params';

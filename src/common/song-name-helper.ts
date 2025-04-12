@@ -4,6 +4,7 @@ import {fetchSongDetailPage} from './util';
 
 export const RATING_TARGET_SONG_NAME_PREFIX = '▶ ';
 
+// This function is shared with Taiwan-independence.
 export function normalizeSongName(name: string) {
   if (name === 'D✪N’T  ST✪P  R✪CKIN’') {
     return 'D✪N’T ST✪P R✪CKIN’';

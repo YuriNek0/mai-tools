@@ -1,10 +1,7 @@
 import React, {useCallback} from 'react';
 
-import {
-  GameVersion,
-  getVersionName,
-  RATING_CALCULATOR_SUPPORTED_VERSIONS,
-} from '../../common/game-version';
+import {GameVersion, getVersionName} from '../../common/game-version';
+import {RATING_CALCULATOR_SUPPORTED_VERSIONS} from '../../common/infra/magic-api';
 import {Language} from '../../common/lang';
 import {useLanguage} from '../../common/lang-react';
 
