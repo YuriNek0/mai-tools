@@ -16,6 +16,10 @@ export interface PlayRecord extends ChartRecord {
   isNewRecord: boolean;
 }
 
+// Only include tab and new line, but not space.
+const FRONT_WHITESPACE_REGEX = /^[\n\t]/g;
+const END_WHITESPACE_REGEX = /[\n\t]$/g;
+
 const AP_FC_IMG_NAME_TO_TEXT = new Map([
   ['fc', 'FC'],
   ['fcplus', 'FC+'],
@@ -45,9 +49,11 @@ function getPlayDate(row: HTMLElement) {
 
 function getSongName(row: HTMLElement) {
   try {
-    return Array.from((row.querySelector('.m_5.p_5.f_13') as HTMLElement).childNodes).find(
-      (node) => node instanceof Text
-    ).textContent;
+    return Array.from((row.querySelector('.m_5.p_5.f_13') as HTMLElement).childNodes)
+      .reverse()
+      .find((node) => node instanceof Text)
+      .textContent.replace(FRONT_WHITESPACE_REGEX, '')
+      .replace(END_WHITESPACE_REGEX, '');
   } catch (e) {
     console.log(e);
     console.log(row);

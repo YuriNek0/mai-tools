@@ -32,10 +32,22 @@ export function compareSongsByRating(
   );
 }
 
-export function compareCandidate(record1: ChartRecordWithRating, record2: ChartRecordWithRating) {
+export function compareCandidate(
+  record1: ChartRecordWithRating,
+  record2: ChartRecordWithRating
+): number {
   const nextRating1 = record1.nextRanks.values().next().value;
-  const costPerformance1 = nextRating1.minRt / (nextRating1.rank.minAchv - record1.achievement);
   const nextRating2 = record2.nextRanks.values().next().value;
+  if (!nextRating1 && !nextRating2) {
+    return 0;
+  } else if (!nextRating1) {
+    // Put record2 first
+    return 1;
+  } else if (!nextRating2) {
+    // Put record1 first
+    return -1;
+  }
+  const costPerformance1 = nextRating1.minRt / (nextRating1.rank.minAchv - record1.achievement);
   const costPerformance2 = nextRating2.minRt / (nextRating2.rank.minAchv - record2.achievement);
   return (
     compareNumbers(costPerformance1, costPerformance2) ||
