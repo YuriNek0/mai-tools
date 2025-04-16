@@ -52,10 +52,16 @@ export const VersionSelect = ({gameVer, handleVersionSelect}: Props) => {
 
         <span>
           {messages.dataSource}{' '}
-          {gameVer === GameVersion.PRiSM ? (
-            <a href="https://arcade-songs.zetaraku.dev/maimai/about/" target="_blank">
-              zetaraku
-            </a>
+          {gameVer >= GameVersion.PRiSM ? (
+            <>
+              <a href="https://arcade-songs.zetaraku.dev/maimai/about/" target="_blank">
+                zetaraku
+              </a>{' '}
+              &{' '}
+              <a href="https://github.com/zvuc/otoge-db" target="_blank">
+                otoge-db
+              </a>
+            </>
           ) : (
             <a href="https://sgimera.github.io/mai_RatingAnalyzer/" target="_blank">
               sgimera
