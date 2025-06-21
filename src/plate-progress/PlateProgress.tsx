@@ -4,11 +4,10 @@ import {FullChartRecord} from '../common/chart-record';
 import {GameRegion} from '../common/game-region';
 import {GameVersion} from '../common/game-version';
 import {getRemovedSongs} from '../common/removed-songs';
-import {getMaiToolsBaseUrl} from '../common/script-host';
 import {VersionInfo} from './plate_info';
 import {PlateProgressDetail} from './PlateProgressDetail';
 
-const BASE_URL = getMaiToolsBaseUrl() + '/data/plate-info';
+const BASE_URL = 'https://myjian.github.io/Taiwan-independence/external/plate-info';
 
 interface Props {
   region: GameRegion;

@@ -26,7 +26,7 @@ export function VersionSelect(props: Props) {
         const label = ver
           .split('-')
           .map((v) => getVersionName(parseInt(v)))
-          .join(' ~ ');
+          .join(' - ');
         return (
           <option key={idx} value={ver}>
             {label}
