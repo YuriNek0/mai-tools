@@ -1,3 +1,7 @@
+# ⚠️ Notice: Limited Maintenance
+
+This project is no longer actively developed. Features may break at any time and may or may not receive fixes. 
+
 # Tools for maimai
 
 ## Use
