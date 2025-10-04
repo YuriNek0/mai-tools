@@ -127,7 +127,6 @@ export class RootComponent extends React.PureComponent<{}, State> {
     let currentLv = startLv;
     const showEachConstant = endLv - startLv < 1;
     while (currentLv <= endLv) {
-      // TODO: support BUDDiES PLUS
       const nextLv = showEachConstant
         ? currentLv + 0.1
         : Math.round(currentLv) === currentLv
