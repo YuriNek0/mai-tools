@@ -15,75 +15,42 @@ const OLD_KEYS_TO_CLEANUP = [
   'magicExpire',
 ];
 
-const enum MagicFormat {
-  MAI_TOOLS,
-}
-
-interface MagicSauce {
-  sauce: string;
-  format: MagicFormat;
-}
-
 interface OldSongProperties extends SongProperties {
   nickname?: string;
 }
 
-const MagicSauceByVersion: Map<GameVersion, MagicSauce> = new Map([
+const MagicSauceByVersion: Map<GameVersion, string> = new Map([
   [
     GameVersion.UNIVERSE_PLUS,
-    {
-      format: MagicFormat.MAI_TOOLS,
-      sauce:
-        'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vZWU1NjlkNzRmNDIyZDRlMjU1MDY1ZDhiMDJlYTI5NGEvcmF3L21haWR4X2x2X3VuaXZlcnNlcGx1cy5qc29u',
-    },
+    'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vZWU1NjlkNzRmNDIyZDRlMjU1MDY1ZDhiMDJlYTI5NGEvcmF3L21haWR4X2x2X3VuaXZlcnNlcGx1cy5qc29u',
   ],
   [
     GameVersion.FESTiVAL,
-    {
-      format: MagicFormat.MAI_TOOLS,
-      sauce:
-        'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vMDg1NWM4OTQ3YjU0N2Q3YjliODg4MTU4NTEyZGRlNjkvcmF3L21haWR4X2x2X2Zlc3RpdmFsLmpzb24=',
-    },
+    'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vMDg1NWM4OTQ3YjU0N2Q3YjliODg4MTU4NTEyZGRlNjkvcmF3L21haWR4X2x2X2Zlc3RpdmFsLmpzb24=',
   ],
   [
     GameVersion.FESTiVAL_PLUS,
-    {
-      format: MagicFormat.MAI_TOOLS,
-      sauce:
-        'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vYWQyNjg1ODcyZmQ3ZjVjZDdhNDdlY2IzNDA1MTRlNmIvcmF3L21haWR4X2x2X2Zlc3RpdmFscGx1cy5qc29u',
-    },
+    'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vYWQyNjg1ODcyZmQ3ZjVjZDdhNDdlY2IzNDA1MTRlNmIvcmF3L21haWR4X2x2X2Zlc3RpdmFscGx1cy5qc29u',
   ],
   [
     GameVersion.BUDDiES,
-    {
-      format: MagicFormat.MAI_TOOLS,
-      sauce:
-        'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vZThkOGJiMjcyZjMyYzJjOGE2ODU0MTQzZGUxY2FhZDEvcmF3Lw==',
-    },
+    'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vZThkOGJiMjcyZjMyYzJjOGE2ODU0MTQzZGUxY2FhZDEvcmF3Lw==',
   ],
   [
     GameVersion.BUDDiES_PLUS,
-    {
-      format: MagicFormat.MAI_TOOLS,
-      sauce:
-        'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vZjA1OTMzMWViOWRhZWZlYjBkYzU3Y2UxNWU2ZjczZTkvcmF3Lw==',
-    },
+    'aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9teWppYW4vZjA1OTMzMWViOWRhZWZlYjBkYzU3Y2UxNWU2ZjczZTkvcmF3Lw==',
   ],
   [
     GameVersion.PRiSM,
-    {
-      format: MagicFormat.MAI_TOOLS,
-      sauce:
-        'aHR0cHM6Ly9teWppYW4uZ2l0aHViLmlvL1RhaXdhbi1pbmRlcGVuZGVuY2UvZXh0ZXJuYWwvbWFnaWMtcHJpc20uanNvbg==',
-    },
+    'aHR0cHM6Ly9teWppYW4uZ2l0aHViLmlvL1RhaXdhbi1pbmRlcGVuZGVuY2UvZXh0ZXJuYWwvbWFnaWMtcHJpc20uanNvbg==',
   ],
   [
     GameVersion.PRiSM_PLUS,
-    {
-      format: MagicFormat.MAI_TOOLS,
-      sauce:
-        'aHR0cHM6Ly9teWppYW4uZ2l0aHViLmlvL1RhaXdhbi1pbmRlcGVuZGVuY2UvZXh0ZXJuYWwvbWFnaWMuanNvbg==',
-    },
+    'aHR0cHM6Ly9teWppYW4uZ2l0aHViLmlvL1RhaXdhbi1pbmRlcGVuZGVuY2UvZXh0ZXJuYWwvbWFnaWMtcHJpc20tcGx1cy5qc29u',
+  ],
+  [
+    GameVersion.CiRCLE,
+    'aHR0cHM6Ly9teWppYW4uZ2l0aHViLmlvL1RhaXdhbi1pbmRlcGVuZGVuY2UvZXh0ZXJuYWwvbWFnaWMuanNvbg==',
   ],
 ]);
 
@@ -91,7 +58,7 @@ export const RATING_CALCULATOR_SUPPORTED_VERSIONS: GameVersion[] = Array.from(
   MagicSauceByVersion.keys()
 ).sort();
 
-const FALLBACK_VERSION = GameVersion.PRiSM;
+const FALLBACK_VERSION = GameVersion.PRiSM_PLUS;
 
 export class MagicApi {
   private async fetchMagic(gameVer: GameVersion): Promise<OldSongProperties[]> {
@@ -99,16 +66,16 @@ export class MagicApi {
     if (!sauce) {
       return this.fetchMagic(FALLBACK_VERSION);
     }
-    const res = await fetch(atob(sauce.sauce));
+    const res = await fetch(atob(sauce));
     if (!res.ok) {
       const error = new Error(`Failed to load magic ${gameVer}`);
       console.warn(error.message);
       return Promise.reject(error);
     }
-    if (sauce.format === MagicFormat.MAI_TOOLS) {
-      return res.json();
-    } else {
-      console.warn(`Unknown magic format: ${sauce.format}`);
+    try {
+      return await res.json();
+    } catch (err) {
+      console.warn(`Failed to parse magic ${gameVer}`, err);
       return [];
     }
   }

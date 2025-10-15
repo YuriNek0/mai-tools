@@ -32,6 +32,7 @@ const VERSION_NAMES = [
   'BUDDiES PLUS',
   'PRiSM (beta)', // 23
   'PRiSM PLUS (beta)',
+  'CiRCLE (experimental)', // 25
 ];
 
 export const enum GameVersion {
@@ -44,9 +45,10 @@ export const enum GameVersion {
   BUDDiES_PLUS = 22,
   PRiSM = 23,
   PRiSM_PLUS = 24,
+  CiRCLE = 25,
 }
 
-export const LATEST_VERSION = GameVersion.PRiSM_PLUS;
+export const LATEST_VERSION = GameVersion.CiRCLE;
 
 export function validateGameVersion(
   ver: number | string | null,
