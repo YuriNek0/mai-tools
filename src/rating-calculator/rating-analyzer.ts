@@ -31,6 +31,18 @@ function getRecordWithRating(
   };
 }
 
+export function isNewChart(
+  record: ChartRecord,
+  songProps: SongProperties,
+  gameVer: GameVersion,
+  includePreviousVerInNewCharts: boolean
+): boolean {
+  if (!songProps) return record.chartType === ChartType.DX;
+  if (songProps.debut === gameVer) return true;
+  if (includePreviousVerInNewCharts) return songProps.debut === gameVer - 1;
+  return false;
+}
+
 /**
  * @param excludeSongsWithNoProps Set this to true when you want to calculate rating for past
  *    versions but don't want to include new songs.
@@ -44,6 +56,8 @@ export function analyzePlayerRating(
   gameVer: GameVersion,
   excludeSongsWithNoProps: boolean
 ): RatingData {
+  // Since CiRCLE, charts debuted in the previous version (PRiSM PLUS) are treated as new charts.
+  const includePreviousVerInNewCharts = gameVer >= GameVersion.CiRCLE;
   const newChartRecords = [];
   const oldChartRecords = [];
   const removedSongs = getRemovedSongs(gameRegion, gameVer);
@@ -55,9 +69,8 @@ export function analyzePlayerRating(
     if (excludeSongsWithNoProps && !songProps) {
       continue;
     }
-    const isNewChart = songProps ? songProps.debut === gameVer : record.chartType === ChartType.DX;
     const recordWithRating = getRecordWithRating(record, songProps);
-    if (isNewChart) {
+    if (isNewChart(record, songProps, gameVer, includePreviousVerInNewCharts)) {
       newChartRecords.push(recordWithRating);
     } else {
       oldChartRecords.push(recordWithRating);
