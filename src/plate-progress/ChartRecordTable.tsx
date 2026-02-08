@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {ChartType} from '../common/chart-type';
 import {Difficulty, getDifficultyClassName, getDifficultyName} from '../common/difficulties';
 import {getSongNickname} from '../common/song-name-helper';

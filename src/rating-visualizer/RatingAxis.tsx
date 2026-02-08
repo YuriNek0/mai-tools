@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface RatingAxisProps {
   maxRating: number;
   containerHeight: number;

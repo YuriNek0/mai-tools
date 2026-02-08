@@ -2,7 +2,6 @@
  * A tool that takes FiNALE score data and converts that to DX score
  * (achievement rate, break distribution, etc.)
  */
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import {DxAchievementCalculator} from './DxAchievementCalculator';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {MAIMAI_SONGS_HOME} from '../../common/arcade-songs';
 import {GameVersion} from '../../common/game-version';
 import {Language} from '../../common/lang';

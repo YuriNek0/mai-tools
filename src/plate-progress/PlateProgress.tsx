@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 
 import {FullChartRecord} from '../common/chart-record';
 import {GameRegion} from '../common/game-region';

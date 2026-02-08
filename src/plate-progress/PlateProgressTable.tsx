@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {Difficulty, getDifficultyShortName} from '../common/difficulties';
 import {PlateType, ProgressByDifficulty, VersionInfo} from './plate_info';
 import {PlateProgressTableCell} from './PlateProgressTableCell';

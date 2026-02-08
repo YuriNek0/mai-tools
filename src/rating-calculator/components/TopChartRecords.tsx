@@ -1,6 +1,6 @@
 import '../css/song-record-styles.css';
 
-import React, {useCallback, useState} from 'react';
+import {useCallback, useState} from 'react';
 
 import {useLanguage} from '../../common/lang-react';
 import {SongDatabase} from '../../common/song-props';

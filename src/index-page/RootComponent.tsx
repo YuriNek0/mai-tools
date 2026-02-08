@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import {useEffect} from 'react';
 
 import {LangSwitcher} from '../common/components/LangSwitcher';
 import {getInitialLanguage, Language} from '../common/lang';

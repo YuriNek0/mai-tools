@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {ChartRecord} from '../../common/chart-record';
 import {ChartType, getChartTypeName} from '../../common/chart-type';
 import {

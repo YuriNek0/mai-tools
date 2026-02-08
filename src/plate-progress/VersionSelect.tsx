@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {GameVersion, getVersionName, LATEST_VERSION} from '../common/game-version';
 
 const VERSIONS = (function () {

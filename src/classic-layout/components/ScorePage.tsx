@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import {useCallback, useState} from 'react';
 
 import {GameVersion, validateGameVersion} from '../../common/game-version';
 import {formatFloat} from '../../common/number-helper';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {Language} from '../common/lang';
 import {useLanguage} from '../common/lang-react';
 import {ALL_BOOKMARKLETS} from './all-bookmarklets';

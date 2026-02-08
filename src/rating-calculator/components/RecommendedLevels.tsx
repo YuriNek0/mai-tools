@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import {useCallback, useState} from 'react';
 
 import {RecommendedLevelRow} from '../../common/components/RecommendedLevelRow';
 import {GameRegion} from '../../common/game-region';
