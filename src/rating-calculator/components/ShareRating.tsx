@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
+import {ChartRecord} from '../../common/chart-record';
 import {GameRegion} from '../../common/game-region';
 import {GameVersion} from '../../common/game-version';
 import {Language} from '../../common/lang';
@@ -45,16 +46,15 @@ function downloadJson(fileContent: string, filename: string) {
 
 function downloadPlayerScores(ratingData: RatingData) {
   const recordsToDownload = ratingData.newChartRecords.concat(ratingData.oldChartRecords);
-  const records = recordsToDownload.map((r) => {
-    return {
-      songName: r.songName,
-      chartType: r.chartType,
-      difficulty: r.difficulty,
-      achievement: r.achievement,
-      genre: r.genre,
-      level: r.level,
-    };
-  });
+  const records = recordsToDownload.map<ChartRecord>((r) => ({
+    songName: r.songName,
+    chartType: r.chartType,
+    difficulty: r.difficulty,
+    achievement: r.achievement,
+    genre: r.genre,
+    level: r.level,
+    fcap: r.fcap,
+  }));
   const filename = `maimai-scores-${new Date().toISOString()}`;
   downloadJson(JSON.stringify(records, null, 2), filename);
 }
@@ -109,8 +109,15 @@ export function ShareRating(props: {
     }
 
     setEncodedSongImages(songProps.map((sp) => sp.ico).join('_'));
-    setEncodedChartTypes(topRecords.reduce<string>((acc, rec) => acc + rec.chartType, ''));
-    setEncodedDifficulties(topRecords.reduce<string>((acc, rec) => acc + rec.difficulty, ''));
+    setEncodedChartTypes(
+      topRecords
+        .map<number>(
+          // Encode chart type in lower 2 bits, AP status in 3rd bit
+          (rec) => rec.chartType | (rec.fcap === 'AP' ? 4 : 0),
+        )
+        .join(''),
+    );
+    setEncodedDifficulties(topRecords.map((rec) => rec.difficulty).join(''));
     setEncodedAchievements(topRecords.map((res) => res.achievement).join('_'));
   }, [ratingData, songDb]);
 
@@ -119,7 +126,7 @@ export function ShareRating(props: {
       evt.preventDefault();
       downloadPlayerScores(ratingData);
     },
-    [ratingData]
+    [ratingData],
   );
 
   const downloadTopAsDxRatingNetJson = useCallback(
@@ -127,7 +134,7 @@ export function ShareRating(props: {
       evt.preventDefault();
       downloadAsDxRatingNetJson(ratingData, true);
     },
-    [ratingData]
+    [ratingData],
   );
 
   const downloadAllAsDxRatingNetJson = useCallback(
@@ -135,7 +142,7 @@ export function ShareRating(props: {
       evt.preventDefault();
       downloadAsDxRatingNetJson(ratingData, false);
     },
-    [ratingData]
+    [ratingData],
   );
 
   const messages = MessagesByLang[useLanguage()];

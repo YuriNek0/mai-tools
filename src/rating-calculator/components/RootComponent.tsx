@@ -293,7 +293,7 @@ function readPlayerScoresFromQueryParams(qp: URLSearchParams, songDb: SongDataba
 
   // Query params must have valid values
   const images = rawImages.split('_');
-  const chartTypes = Array.from(rawChartTypes)
+  const chartTypeAndAps = Array.from(rawChartTypes)
     .map((ct) => parseInt(ct))
     .filter((ct) => !isNaN(ct));
   const difficulties = Array.from(rawDifficulties)
@@ -304,7 +304,7 @@ function readPlayerScoresFromQueryParams(qp: URLSearchParams, songDb: SongDataba
     .map((ac) => parseFloat(ac))
     .filter((ac) => !isNaN(ac));
   if (
-    images.length !== chartTypes.length ||
+    images.length !== chartTypeAndAps.length ||
     images.length !== difficulties.length ||
     images.length !== achievements.length
   ) {
@@ -314,12 +314,13 @@ function readPlayerScoresFromQueryParams(qp: URLSearchParams, songDb: SongDataba
   // All records must exist in SongDatabase
   let failed = false;
   const records = images.map<ChartRecord>((ico, i) => {
-    const chartType = chartTypes[i];
+    const chartType = chartTypeAndAps[i] & 3; // Lower 2 bits for chart type
+    const isAp = (chartTypeAndAps[i] & 4) !== 0; // 3rd bit for AP status
     const difficulty = difficulties[i];
     const achievement = achievements[i];
     const props = songDb.getSongPropsByIco(ico, chartType);
     if (!props) {
-      console.warn('Could not find song for ', ico, chartType, difficulty, achievement);
+      console.warn('Could not find song for', ico, chartType, difficulty, achievement);
       failed = true;
       return;
     }
@@ -331,10 +332,7 @@ function readPlayerScoresFromQueryParams(qp: URLSearchParams, songDb: SongDataba
       chartType,
       level: lv,
       achievement,
-      // TODO(#130): Support AP status in query params.
-      // For example, 0 = not AP, 1 = AP or AP+
-      // We can also encode this in chartType to reduce URL length.
-      fcap: null,
+      fcap: achievement >= 101 ? 'AP+' : isAp ? 'AP' : null,
     };
   });
   return failed ? [] : records;
