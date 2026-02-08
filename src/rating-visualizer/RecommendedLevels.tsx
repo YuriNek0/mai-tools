@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import {RecommendedLevelRow} from '../common/components/RecommendedLevelRow';
 import {Language} from '../common/lang';
 import {useLanguage} from '../common/lang-react';
+import {QueryParam} from '../common/query-params';
 import {
   calcRecommendedLevels,
   getRankDefinitions,
@@ -11,7 +12,6 @@ import {
 import {loadUserPreference, saveUserPreference, UserPreference} from '../common/user-preference';
 import {CommonMessages} from '../rating-calculator/common-messages';
 import {NUM_TOP_NEW_CHARTS, NUM_TOP_OLD_CHARTS} from '../rating-calculator/rating-analyzer';
-import {QueryParam} from "../common/query-params";
 
 const MIN_ACHIEVEMENT = 99;
 const DEFAULT_TARGET_RATING = 12000;
@@ -31,11 +31,12 @@ const MessagesByLang = {
 export const RecommendedLevels = () => {
   const queryParams = new URLSearchParams(location.search);
   const [targetRating, setTargetRating] = useState(
-    () => parseInt(queryParams.get(QueryParam.TargetRating)) ||
-        parseInt(loadUserPreference(UserPreference.TargetRating)) ||
-        DEFAULT_TARGET_RATING
+    () =>
+      parseInt(queryParams.get(QueryParam.TargetRating)) ||
+      parseInt(loadUserPreference(UserPreference.TargetRating)) ||
+      DEFAULT_TARGET_RATING,
   );
-  const handleTargetRatingChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleTargetRatingChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const rating = parseInt(e.currentTarget.value);
     if (isNaN(rating) || rating <= 0) {
       return;
@@ -74,7 +75,7 @@ export const RecommendedLevels = () => {
           {ranks.map((rank) =>
             recLvsByRank[rank.title].map((recLv, idx) => (
               <RecommendedLevelRow key={idx} rankTitle={rank.title} recLv={recLv} />
-            ))
+            )),
           )}
         </tbody>
       </table>

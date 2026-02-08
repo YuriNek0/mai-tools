@@ -45,7 +45,7 @@ const MessagesByLang = {
 };
 
 export const MobileCreateManual = () => {
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
   const lang = useLanguage();
 
   const setPageTitle = useCallback(() => {

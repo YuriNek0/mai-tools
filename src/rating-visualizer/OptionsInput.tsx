@@ -83,7 +83,7 @@ export class OptionsInput extends React.PureComponent<OptionsInputProps> {
   }
 
   private renderLvOptions() {
-    const options: JSX.Element[] = [];
+    const options: React.ReactElement[] = [];
     for (let i = 0; i <= LEVELS.length; i++) {
       const lv = LEVELS[i];
       options.push(
