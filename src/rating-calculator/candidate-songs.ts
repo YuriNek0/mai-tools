@@ -165,6 +165,7 @@ export function getNotPlayedCharts(
         level,
         genre: '',
         chartType: s.dx,
+        rankTitle: '',
         rating: 0,
         achievement: 0,
         fcap: null,

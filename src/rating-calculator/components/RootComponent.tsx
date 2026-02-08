@@ -67,7 +67,7 @@ export class RootComponent extends React.PureComponent<{}, State> {
     this.currentGameVer = validateGameVersion(
       gameVerParam,
       RATING_CALCULATOR_SUPPORTED_VERSIONS[0],
-      RATING_CALCULATOR_SUPPORTED_VERSIONS[RATING_CALCULATOR_SUPPORTED_VERSIONS.length - 1]
+      RATING_CALCULATOR_SUPPORTED_VERSIONS[RATING_CALCULATOR_SUPPORTED_VERSIONS.length - 1],
     );
     const region = getGameRegionFromShortString(queryParams.get(QueryParam.GameRegion));
 
@@ -191,13 +191,13 @@ export class RootComponent extends React.PureComponent<{}, State> {
       this.playerScores,
       region,
       gameVer,
-      gameVer < this.currentGameVer
+      gameVer < this.currentGameVer,
     );
     console.log('Rating Data:', ratingData);
     this.setState({ratingData}, () =>
       setTimeout(() => {
         location.assign('#ratingOutput');
-      }, 0)
+      }, 0),
     );
   };
 
@@ -236,10 +236,10 @@ export class RootComponent extends React.PureComponent<{}, State> {
                 RATING_CALCULATOR_SUPPORTED_VERSIONS[0],
                 RATING_CALCULATOR_SUPPORTED_VERSIONS[
                   RATING_CALCULATOR_SUPPORTED_VERSIONS.length - 1
-                ]
+                ],
               ),
             },
-            this.analyzeRating
+            this.analyzeRating,
           );
           break;
         case 'playerGrade':

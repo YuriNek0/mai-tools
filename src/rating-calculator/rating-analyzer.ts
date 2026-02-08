@@ -2,6 +2,7 @@ import {ChartRecord} from '../common/chart-record';
 import {ChartType} from '../common/chart-type';
 import {GameRegion} from '../common/game-region';
 import {GameVersion} from '../common/game-version';
+import {getRankTitle} from '../common/rank-functions';
 import {getRating} from '../common/rating-functions';
 import {getRemovedSongs} from '../common/removed-songs';
 import {SongDatabase, SongProperties} from '../common/song-props';
@@ -18,7 +19,7 @@ export const NUM_TOP_OLD_CHARTS = 35;
 function getRecordWithRating(
   gameVer: GameVersion,
   record: ChartRecord,
-  songProps?: SongProperties
+  songProps?: SongProperties,
 ): ChartRecordWithRating {
   if (songProps) {
     const lv = songProps.lv[record.difficulty];
@@ -31,6 +32,7 @@ function getRecordWithRating(
     gameVer >= GameVersion.CiRCLE && record.fcap && record.fcap.includes('AP') ? 1 : 0;
   return {
     ...record,
+    rankTitle: bonusPoint ? record.fcap : getRankTitle(record.achievement),
     rating: baseRating + bonusPoint,
   };
 }
@@ -39,7 +41,7 @@ export function isNewChart(
   record: ChartRecord,
   songProps: SongProperties,
   gameVer: GameVersion,
-  includePreviousVerInNewCharts: boolean
+  includePreviousVerInNewCharts: boolean,
 ): boolean {
   if (!songProps) return record.chartType === ChartType.DX;
   if (songProps.debut === gameVer) return true;
@@ -58,7 +60,7 @@ export function analyzePlayerRating(
   playerScores: ReadonlyArray<ChartRecord>,
   gameRegion: GameRegion,
   gameVer: GameVersion,
-  excludeSongsWithNoProps: boolean
+  excludeSongsWithNoProps: boolean,
 ): RatingData {
   // Since CiRCLE, charts debuted in the previous version (PRiSM PLUS) are treated as new charts.
   const includePreviousVerInNewCharts = gameVer >= GameVersion.CiRCLE;

@@ -78,7 +78,7 @@ export const CandidateChartRecords = ({
     minRating ||
       (ratingData.oldTopChartsCount
         ? Math.floor(0.9 * ratingData.oldChartRecords[ratingData.oldTopChartsCount - 1].rating)
-        : 0)
+        : 0),
   );
 
   const candidates = useMemo(() => {
@@ -91,8 +91,8 @@ export const CandidateChartRecords = ({
     return showPlayed
       ? getCandidateCharts(songDatabase.gameVer, records, topCount, poolSize, lvFilter)
       : songList
-      ? getNotPlayedCharts(songDatabase.gameVer, songList, records, minRating, poolSize, lvFilter)
-      : [];
+        ? getNotPlayedCharts(songDatabase.gameVer, songList, records, minRating, poolSize, lvFilter)
+        : [];
   }, [songList, records, showPlayed, levelToShow, minorLvToShow]);
 
   const toggleShowMore = useCallback(
@@ -100,7 +100,7 @@ export const CandidateChartRecords = ({
       evt.preventDefault();
       setShowAll(!showAll);
     },
-    [showAll]
+    [showAll],
   );
 
   const toggleShowPlayed = useCallback((showPlayed: boolean) => {
@@ -115,14 +115,14 @@ export const CandidateChartRecords = ({
       }
       setLevelToShow(majorLv);
     },
-    [setLevelToShow]
+    [setLevelToShow],
   );
   const selectMinorLv = useCallback(
     (evt: React.SyntheticEvent<HTMLSelectElement>) => {
       const minorLv = parseFloat(evt.currentTarget.value);
       setMinorLvToShow(isNaN(minorLv) ? null : minorLv);
     },
-    [setMinorLvToShow]
+    [setMinorLvToShow],
   );
 
   const handleSortBy = useCallback(
@@ -136,7 +136,7 @@ export const CandidateChartRecords = ({
         setReverse(false);
       }
     },
-    [sortBy, reverse]
+    [sortBy, reverse],
   );
 
   const endIndex = showAll ? candidates.length : Math.min(candidates.length, CANDIDATE_SONGS_LIMIT);

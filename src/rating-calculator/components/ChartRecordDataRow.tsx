@@ -3,7 +3,6 @@ import React, {ReactNode, useCallback} from 'react';
 import {getChartTypeName} from '../../common/chart-type';
 import {Difficulty, getDifficultyClassName} from '../../common/difficulties';
 import {getDisplayLv} from '../../common/level-helper';
-import {getRankTitle} from '../../common/rank-functions';
 import {getSongNickname, RATING_TARGET_SONG_NAME_PREFIX} from '../../common/song-name-helper';
 import {getArcadeSongLink} from '../../common/wiki-link';
 import {ChartRecordWithRating, ColumnType} from '../types';
@@ -54,7 +53,7 @@ export const ChartRecordDataRow = React.memo((props: Props) => {
             record.achievement.toFixed(4) + '%'
           );
         case ColumnType.RANK:
-          return getRankTitle(record.achievement);
+          return record.rankTitle;
         case ColumnType.NEXT_RANK:
           return record.nextRanks
             ? Array.from(record.nextRanks.values()).map((r, idx) => <div key={idx}>{r.target}</div>)

@@ -10,6 +10,7 @@ import {
   compareSongsByChartType,
   compareSongsByLevel,
   compareSongsByName,
+  compareSongsByRank,
   compareSongsByRating,
 } from '../record-comparator';
 import {ChartRecordWithRating, ColumnType} from '../types';
@@ -34,7 +35,7 @@ const COMPARATOR: Map<ColumnType, (x: ChartRecordWithRating, y: ChartRecordWithR
     [ColumnType.CHART_TYPE, compareSongsByChartType],
     [ColumnType.LEVEL, compareSongsByLevel],
     [ColumnType.ACHIEVEMENT, compareSongsByAchv],
-    [ColumnType.RANK, compareSongsByAchv],
+    [ColumnType.RANK, compareSongsByRank],
     [ColumnType.RATING, compareSongsByRating],
   ]);
 
@@ -64,7 +65,7 @@ export const TopChartRecords = (props: Props) => {
         setReverse(false);
       }
     },
-    [sortBy, reverse]
+    [sortBy, reverse],
   );
 
   let records = props.records.slice(0, limit);

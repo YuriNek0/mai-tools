@@ -14,6 +14,11 @@ export interface ChartAchievementTarget {
 }
 
 export interface ChartRecordWithRating extends ChartRecord {
+  /**
+   * Usually rankTitle is SSS, SS+, etc.
+   * But if game version >= CiRCLE and player has AP, we'll display AP/AP+.
+   */
+  rankTitle: string;
   rating: number;
   nextRanks?: Map<string, ChartAchievementTarget>;
   order?: number;
