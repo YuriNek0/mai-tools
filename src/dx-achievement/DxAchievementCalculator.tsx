@@ -76,7 +76,7 @@ export class DxAchievementCalculator extends React.PureComponent<{}, State> {
       finaleAchv,
       totalScore,
       breakScore,
-      breakJudgements
+      breakJudgements,
     );
     return (
       <>

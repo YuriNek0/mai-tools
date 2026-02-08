@@ -7,9 +7,9 @@ import {Bookmarklets} from './Bookmarklets';
 import {OtherTools} from './OtherTools';
 
 const UIMessages = {
-  [Language.zh_TW]: {pageTitle: "mai-tools 介紹"},
-  [Language.en_US]: {pageTitle: "mai-tools index"},
-  [Language.ko_KR]: {pageTitle: "mai-tools 소개"},
+  [Language.zh_TW]: {pageTitle: 'mai-tools 介紹'},
+  [Language.en_US]: {pageTitle: 'mai-tools index'},
+  [Language.ko_KR]: {pageTitle: 'mai-tools 소개'},
 };
 
 export const RootComponent = () => {
@@ -27,7 +27,7 @@ export const RootComponent = () => {
       <OtherTools />
       <div className="footer">
         <hr />
-        Made by{" "}
+        Made by{' '}
         <a className="authorLink" href="https://github.com/myjian" target="_blank">
           myjian
         </a>

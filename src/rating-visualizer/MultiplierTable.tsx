@@ -1,4 +1,4 @@
-import {useCallback, useState, SyntheticEvent} from 'react';
+import {SyntheticEvent, useCallback, useState} from 'react';
 
 import {Language} from '../common/lang';
 import {useLanguage} from '../common/lang-react';

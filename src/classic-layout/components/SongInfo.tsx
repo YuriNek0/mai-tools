@@ -7,9 +7,9 @@ const DifficultyInfo = memo((props: {difficulty?: string}) => {
   if (!difficulty) {
     return null;
   }
-  const difficultyClass = difficulty.toLowerCase().replace(":", "");
+  const difficultyClass = difficulty.toLowerCase().replace(':', '');
   return (
-    <span className={"difficulty " + difficultyClass}>
+    <span className={'difficulty ' + difficultyClass}>
       【<span id="difficulty">{difficulty}</span>】
     </span>
   );

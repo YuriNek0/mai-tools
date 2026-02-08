@@ -17,7 +17,7 @@ export const RatingAxis = ({
   onClick,
 }: RatingAxisProps) => {
   const containerStyle = {
-    height: containerHeight + "px",
+    height: containerHeight + 'px',
   };
   const values = [];
   // values should include maxRating
@@ -34,7 +34,7 @@ export const RatingAxis = ({
 };
 
 const AxisLabel = ({value, heightUnit}: {value: number; heightUnit: number}) => {
-  const childStyle = {bottom: value * heightUnit + "px"};
+  const childStyle = {bottom: value * heightUnit + 'px'};
   return (
     <div className="axisLabel" style={childStyle}>
       <span className="axisLabelText">{value}</span>

@@ -1,4 +1,4 @@
-import {useCallback, SyntheticEvent} from 'react';
+import {SyntheticEvent, useCallback} from 'react';
 
 import {Language} from '../../common/lang';
 import {useLanguage} from '../../common/lang-react';
@@ -29,7 +29,7 @@ export const CandidatesPlayedToggle = ({name, showPlayed, toggleShowPlayed}: Pro
     (evt: SyntheticEvent<HTMLInputElement>) => {
       toggleShowPlayed(evt.currentTarget.value === '1');
     },
-    [toggleShowPlayed]
+    [toggleShowPlayed],
   );
   const messages = MessagesByLang[useLanguage()];
 

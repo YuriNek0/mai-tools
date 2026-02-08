@@ -42,7 +42,7 @@ export const DifficultyDistribution = ({chartRecords, topChartsCount}: Props) =>
       has[r.chartType] = true;
       return has;
     },
-    {[ChartType.STANDARD]: false, [ChartType.DX]: false, [ChartType.UTAGE]: false}
+    {[ChartType.STANDARD]: false, [ChartType.DX]: false, [ChartType.UTAGE]: false},
   );
   const chartTypeNames = [ChartType.DX, ChartType.STANDARD]
     .filter((chartType) => hasChartType[chartType])
@@ -62,7 +62,7 @@ export const DifficultyDistribution = ({chartRecords, topChartsCount}: Props) =>
         {Array.from(recordsPerDiff.entries())
           .filter(
             ([_, countByChartType]) =>
-              countByChartType[ChartType.DX] + countByChartType[ChartType.STANDARD] > 0
+              countByChartType[ChartType.DX] + countByChartType[ChartType.STANDARD] > 0,
           )
           .map(([d, countByChartType]) => {
             const dist = new Map([

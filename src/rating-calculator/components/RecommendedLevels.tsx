@@ -90,7 +90,7 @@ export const RecommendedLevels = ({
                         rankTitle={rank.title}
                         recLv={recLv}
                       />
-                    ))
+                    )),
                   )
                   .flat()}
               </>
@@ -111,7 +111,7 @@ export const RecommendedLevels = ({
                         recLv={recLv}
                         includeOldVersions
                       />
-                    ))
+                    )),
                   )
                   .flat()}
               </>

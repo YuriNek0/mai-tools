@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState, SyntheticEvent} from 'react';
+import {SyntheticEvent, useCallback, useEffect, useState} from 'react';
 
 import {ChartRecord} from '../../common/chart-record';
 import {GameRegion} from '../../common/game-region';

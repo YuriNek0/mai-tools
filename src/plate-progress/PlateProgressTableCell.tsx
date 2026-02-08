@@ -1,4 +1,4 @@
-import {useCallback, KeyboardEvent} from 'react';
+import {KeyboardEvent, useCallback} from 'react';
 
 import {Difficulty, getDifficultyClassName} from '../common/difficulties';
 import {PlateType} from './plate_info';

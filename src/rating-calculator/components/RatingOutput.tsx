@@ -1,6 +1,6 @@
 import '../css/rating-output.css';
 
-import {useCallback, useMemo, useState, SyntheticEvent} from 'react';
+import {SyntheticEvent, useCallback, useMemo, useState} from 'react';
 
 import {GameRegion} from '../../common/game-region';
 import {GameVersion} from '../../common/game-version';
@@ -58,10 +58,10 @@ export const RatingOutput = ({
     const allSongProps = allSongs
       ? songDatabase.getPropsForSongs(allSongs)
       : gameRegion === GameRegion.Jp
-      ? songDatabase.getAllProps()
-      : null;
+        ? songDatabase.getAllProps()
+        : null;
     const newSongs = allSongProps?.filter(
-      (song) => song.debut === gameVer || song.debut === minVersionForNewSongs
+      (song) => song.debut === gameVer || song.debut === minVersionForNewSongs,
     );
     const oldSongs = allSongProps?.filter((song) => song.debut < minVersionForNewSongs);
     const fullNewChartsRating = newSongs

@@ -126,7 +126,7 @@ export const ScorePage = (props: ScorePageProps) => {
 
 function getNextRankEntry(
   isDxMode: boolean,
-  props: Pick<ScorePageProps, 'achievement' | 'finaleAchievement' | 'finaleBorder'>
+  props: Pick<ScorePageProps, 'achievement' | 'finaleAchievement' | 'finaleBorder'>,
 ) {
   const achv = isDxMode ? props.achievement : props.finaleAchievement;
   if (isDxMode) {
@@ -171,7 +171,7 @@ function getNoteLoss(isDxMode: boolean, achvLossDetail: ScorePageProps['achvLoss
 function getDisplayScorePerType(
   isDxMode: boolean,
   showDetail: boolean,
-  props: Pick<ScorePageProps, 'achvLossDetail' | 'dxAchvPerType' | 'playerScorePerType'>
+  props: Pick<ScorePageProps, 'achvLossDetail' | 'dxAchvPerType' | 'playerScorePerType'>,
 ): ScorePerType {
   const lossDetail = isDxMode ? props.achvLossDetail.dx : props.achvLossDetail.finale;
   if (showDetail) {

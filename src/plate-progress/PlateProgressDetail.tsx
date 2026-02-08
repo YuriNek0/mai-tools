@@ -23,7 +23,7 @@ export function PlateProgressDetail(props: Props) {
       setPlateType(plate);
       setSelectedDifficulty(d);
     },
-    [plateType, selectedDifficulty]
+    [plateType, selectedDifficulty],
   );
   const allSongs = {
     dx: new Set(versionInfo.dx_songs),
@@ -42,10 +42,13 @@ export function PlateProgressDetail(props: Props) {
     [Difficulty.UTAGE]: 0,
   };
   const progressByPlate: Record<PlateType, ProgressByDifficulty> = useMemo(() => {
-    const result = Object.keys(versionInfo.plate_name).reduce((res, plateType) => {
-      res[plateType as PlateType] = createEmptyProgress();
-      return res;
-    }, {} as Record<PlateType, ProgressByDifficulty>);
+    const result = Object.keys(versionInfo.plate_name).reduce(
+      (res, plateType) => {
+        res[plateType as PlateType] = createEmptyProgress();
+        return res;
+      },
+      {} as Record<PlateType, ProgressByDifficulty>,
+    );
     playerScores
       .filter((record) => {
         const nickname = getSongNickname(record.songName, record.genre);

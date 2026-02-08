@@ -1,4 +1,4 @@
-import {useCallback, useMemo, useState, SyntheticEvent} from 'react';
+import {SyntheticEvent, useCallback, useMemo, useState} from 'react';
 
 import {GameVersion} from '../../common/game-version';
 import {useLanguage} from '../../common/lang-react';
