@@ -77,6 +77,7 @@ function processRow(
       chartType,
       level,
       achievement: parseFloat(achievement),
+      fcap: getApFcStatus(row, true),
     };
   }
 }
@@ -126,7 +127,6 @@ function processRowFull(
   const props = songDb.getSongProperties(baseRecord.songName, state.genre, baseRecord.chartType);
   return {
     ...baseRecord,
-    fcap: getApFcStatus(row, true),
     sync: getSyncStatus(row, true),
     version: props ? props.debut : -1,
     // NOTE: dxscore has to be provided by processDxScoreRow.

@@ -131,6 +131,7 @@ export function getNotPlayedCharts(
         chartType: s.dx,
         rating: 0,
         achievement: 0,
+        fcap: null,
       };
       const ratingByRank = getNextRating(record, minRating, 1);
       if (!ratingByRank.size) {

@@ -85,6 +85,7 @@ function processRow(
     return {
       songName,
       genre: state.genre,
+      fcap: getApFcStatus(row),
       difficulty,
       level,
       chartType,
@@ -137,7 +138,6 @@ function processRowFull(
   const props = songDb.getSongProperties(baseRecord.songName, state.genre, baseRecord.chartType);
   return {
     ...baseRecord,
-    fcap: getApFcStatus(row),
     sync: getSyncStatus(row),
     dxscore: getMyDxScoreInfo(row),
     version: props ? props.debut : -1,

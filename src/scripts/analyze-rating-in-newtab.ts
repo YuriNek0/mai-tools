@@ -119,6 +119,9 @@ declare global {
         level,
         chartType,
         achievement,
+        // TODO(#130): It looks like the rating page does not show FC/AP status.
+        // We may need to fetch it from song details page (using idx).
+        fcap: null,
       });
       visitedCharts.add(key);
     }

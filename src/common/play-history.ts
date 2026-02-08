@@ -93,19 +93,27 @@ function getRank(row: HTMLElement): string {
     .toUpperCase();
 }
 
-function getMarks(row: HTMLElement): string {
-  const results = [];
-  // FC/AP
+function getApFcStatus(row: HTMLElement): string {
   const stampImgs = row.querySelectorAll(
     '.playlog_result_innerblock > img'
   ) as NodeListOf<HTMLImageElement>;
   const fcapSrc = stampImgs[0].src.replace(/\?ver=.*$/, '');
   const fcapImgName = fcapSrc.substring(fcapSrc.lastIndexOf('/') + 1, fcapSrc.lastIndexOf('.'));
-  if (AP_FC_IMG_NAME_TO_TEXT.has(fcapImgName)) {
-    results.push(AP_FC_IMG_NAME_TO_TEXT.get(fcapImgName));
+  return AP_FC_IMG_NAME_TO_TEXT.get(fcapImgName);
+}
+
+function getMarks(row: HTMLElement): string {
+  const results = [];
+  // FC/AP
+  const fcap = getApFcStatus(row);
+  if (fcap) {
+    results.push(fcap);
   }
 
   // SYNC
+  const stampImgs = row.querySelectorAll(
+    '.playlog_result_innerblock > img'
+  ) as NodeListOf<HTMLImageElement>;
   const fullSyncSrc = stampImgs[1].src.replace(/\?ver=.*$/, '');
   const fullSyncImgName = fullSyncSrc.substring(
     fullSyncSrc.lastIndexOf('/') + 1,
@@ -148,6 +156,7 @@ export function getChartRecordFromPlayRecordRow(
     difficulty,
     achievement: getAchievement(row),
     level,
+    fcap: getApFcStatus(row),
   };
 }
 

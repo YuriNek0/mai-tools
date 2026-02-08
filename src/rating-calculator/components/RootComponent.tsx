@@ -331,6 +331,10 @@ function readPlayerScoresFromQueryParams(qp: URLSearchParams, songDb: SongDataba
       chartType,
       level: lv,
       achievement,
+      // TODO(#130): Support AP status in query params.
+      // For example, 0 = not AP, 1 = AP or AP+
+      // We can also encode this in chartType to reduce URL length.
+      fcap: null,
     };
   });
   return failed ? [] : records;
