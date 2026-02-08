@@ -14,8 +14,6 @@ import {SongProperties} from '../common/song-props';
 import {compareCandidate, compareSongsByLevel} from './record-comparator';
 import {ChartAchievementTarget, ChartRecordWithRating} from './types';
 
-// const MIN_RATING_ADJUSTMENT = 10; // for sorting order tweak
-
 const LOWEST_RANK_FOR_CANDIDATE = getRankIndexByAchievement(94);
 
 type NextRatingCandidate = Pick<ChartRecordWithRating, 'achievement' | 'level' | 'fcap'>;
@@ -36,12 +34,14 @@ function getNextRating(
       const [minRt] = calculateRatingRange(record.level, RANK_SSS_PLUS);
       const rating = 1 + minRt;
       if (rating > lowestRating) {
+        // Because achievement of AP can be lower than 101% (usually 100.8%~100.9%), we divide
+        // the delta by 2 to make the cost lower.
+        const cost = (101 - record.achievement) / 2;
         ratingByRank.set('AP', {
           delta: rating - lowestRating,
           rating,
           target: 'AP',
-          // Use 100.85% as the achievement for All Perfect.
-          cost: Math.abs(100.85 - record.achievement),
+          cost,
         });
       }
     }
