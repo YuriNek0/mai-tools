@@ -1,6 +1,6 @@
 import '../css/rating-output.css';
 
-import React, {useCallback, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState, SyntheticEvent} from 'react';
 
 import {GameRegion} from '../../common/game-region';
 import {GameVersion} from '../../common/game-version';
@@ -75,7 +75,7 @@ export const RatingOutput = ({
 
   const [compactMode, setCompactMode] = useState(false);
 
-  const toggleCompactMode = useCallback((evt: React.SyntheticEvent<HTMLInputElement>) => {
+  const toggleCompactMode = useCallback((evt: SyntheticEvent<HTMLInputElement>) => {
     setCompactMode(evt.currentTarget.checked);
   }, []);
 

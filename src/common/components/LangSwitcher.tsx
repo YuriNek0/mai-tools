@@ -1,4 +1,4 @@
-import React from 'react';
+import {Fragment, SyntheticEvent} from 'react';
 
 import {Language, saveLanguage, SUPPORTED_LANGUAGES} from '../lang';
 import {useLanguage} from '../lang-react';
@@ -13,7 +13,7 @@ const UIString = {
 export function LangSwitcher() {
   const lang = useLanguage();
 
-  const handleClick = (evt: React.SyntheticEvent<HTMLAnchorElement>) => {
+  const handleClick = (evt: SyntheticEvent<HTMLAnchorElement>) => {
     saveLanguage(evt.currentTarget.dataset['lang'] as Language);
   };
 
@@ -21,7 +21,7 @@ export function LangSwitcher() {
     <div>
       語言 (Language)：
       {SUPPORTED_LANGUAGES.map((otherLang) => (
-        <React.Fragment key={otherLang}>
+        <Fragment key={otherLang}>
           {otherLang === lang ? (
             UIString[otherLang]
           ) : (
@@ -34,7 +34,7 @@ export function LangSwitcher() {
             </a>
           )}
           &nbsp;
-        </React.Fragment>
+        </Fragment>
       ))}
     </div>
   );

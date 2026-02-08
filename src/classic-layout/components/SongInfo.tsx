@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {memo} from 'react';
 
 import {getZhWikiLink} from '../../common/wiki-link';
 
-const DifficultyInfo = React.memo((props: {difficulty?: string}) => {
+const DifficultyInfo = memo((props: {difficulty?: string}) => {
   const {difficulty} = props;
   if (!difficulty) {
     return null;

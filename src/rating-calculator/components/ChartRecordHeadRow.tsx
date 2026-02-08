@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import {memo, useCallback} from 'react';
 
 import {Language} from '../../common/lang';
 import {useLanguage} from '../../common/lang-react';
@@ -44,7 +44,7 @@ interface Props {
   sortBy?: (col: ColumnType) => void;
 }
 
-export const ChartRecordHeadRow = React.memo(({columns, sortBy}: Props) => {
+export const ChartRecordHeadRow = memo(({columns, sortBy}: Props) => {
   const lang = useLanguage();
   const handleClick = sortBy && ((index: number) => sortBy(columns[index]));
   const renderCell = useCallback((col: ColumnType) => getColumnTitle(lang, col), [lang]);

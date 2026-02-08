@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import {SyntheticEvent, useCallback} from 'react';
 
 import {GameVersion, getVersionName} from '../../common/game-version';
 import {RATING_CALCULATOR_SUPPORTED_VERSIONS} from '../../common/infra/magic-api';
@@ -27,10 +27,10 @@ interface Props {
 
 export const VersionSelect = ({gameVer, handleVersionSelect}: Props) => {
   const handleChange = useCallback(
-    (evt: React.FormEvent<HTMLSelectElement>) => {
+    (evt: SyntheticEvent<HTMLSelectElement>) => {
       handleVersionSelect(parseInt(evt.currentTarget.value));
     },
-    [handleVersionSelect]
+    [handleVersionSelect],
   );
   const messages = MessagesByLang[useLanguage()];
   return (

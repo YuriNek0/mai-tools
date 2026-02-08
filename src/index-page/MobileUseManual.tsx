@@ -1,4 +1,3 @@
-import React from 'react';
 
 import {Language} from '../common/lang';
 import {useLanguage} from '../common/lang-react';
@@ -38,7 +37,7 @@ const MessagesByLang = {
 export const MobileUseManual = () => {
   const messages = MessagesByLang[useLanguage()];
   return (
-    <React.Fragment>
+    <>
       <h3>● {messages.title}</h3>
       <div>
         <ol>
@@ -50,6 +49,6 @@ export const MobileUseManual = () => {
           <li>{messages.chrome6}</li>
         </ol>
       </div>
-    </React.Fragment>
+    </>
   );
 };

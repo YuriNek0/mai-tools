@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useState, SyntheticEvent} from 'react';
 
 import {ChartRecord} from '../../common/chart-record';
 import {GameRegion} from '../../common/game-region';
@@ -122,7 +122,7 @@ export function ShareRating(props: {
   }, [ratingData, songDb]);
 
   const downloadAllPlayerScores = useCallback(
-    (evt: React.SyntheticEvent) => {
+    (evt: SyntheticEvent) => {
       evt.preventDefault();
       downloadPlayerScores(ratingData);
     },
@@ -130,7 +130,7 @@ export function ShareRating(props: {
   );
 
   const downloadTopAsDxRatingNetJson = useCallback(
-    (evt: React.SyntheticEvent) => {
+    (evt: SyntheticEvent) => {
       evt.preventDefault();
       downloadAsDxRatingNetJson(ratingData, true);
     },
@@ -138,7 +138,7 @@ export function ShareRating(props: {
   );
 
   const downloadAllAsDxRatingNetJson = useCallback(
-    (evt: React.SyntheticEvent) => {
+    (evt: SyntheticEvent) => {
       evt.preventDefault();
       downloadAsDxRatingNetJson(ratingData, false);
     },

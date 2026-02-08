@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import {SyntheticEvent, useCallback} from 'react';
 
 import {GameRegion} from '../../common/game-region';
 import {Language} from '../../common/lang';
@@ -29,11 +29,11 @@ interface Props {
 
 export const RegionSelect = ({gameRegion, handleRegionSelect}: Props) => {
   const handleChange = useCallback(
-    (evt: React.FormEvent<HTMLSelectElement>) => {
+    (evt: SyntheticEvent<HTMLSelectElement>) => {
       const region = evt.currentTarget.value as GameRegion;
       handleRegionSelect(region);
     },
-    [handleRegionSelect]
+    [handleRegionSelect],
   );
   const messages = MessagesByLang[useLanguage()];
   return (

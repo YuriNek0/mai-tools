@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import {SyntheticEvent, useCallback} from 'react';
 
 import {Language, SUPPORTED_LANGUAGES} from '../../common/lang';
 
@@ -15,10 +15,10 @@ interface Props {
 
 export const LanguageChooser = ({activeLanguage, changeLanguage}: Props) => {
   const handleChange = useCallback(
-    (evt: React.FormEvent<HTMLSelectElement>) => {
+    (evt: SyntheticEvent<HTMLSelectElement>) => {
       changeLanguage(evt.currentTarget.value as Language);
     },
-    [changeLanguage]
+    [changeLanguage],
   );
   return (
     <tr>

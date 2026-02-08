@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {SyntheticEvent} from 'react';
 
 import {QueryParam} from '../common/query-params';
 import {DxAchvDetails} from './DxAchvDetails';
@@ -200,14 +200,14 @@ export class DxAchievementCalculator extends React.PureComponent<{}, State> {
     );
   }
 
-  private handleChangeFinaleAchv = (evt: React.FormEvent<HTMLInputElement>) => {
+  private handleChangeFinaleAchv = (evt: SyntheticEvent<HTMLInputElement>) => {
     const achv = parseFloat(evt.currentTarget.value);
     if (achv > 0) {
       this.setState({finaleAchv: achv});
     }
   };
 
-  private handleChangeTotalScore = (evt: React.FormEvent<HTMLInputElement>) => {
+  private handleChangeTotalScore = (evt: SyntheticEvent<HTMLInputElement>) => {
     const totalScore = parseInt(evt.currentTarget.value);
     if (totalScore > 0) {
       const name = evt.currentTarget.name as 'breakScore' | 'totalScore';
@@ -216,7 +216,7 @@ export class DxAchievementCalculator extends React.PureComponent<{}, State> {
     }
   };
 
-  private handleChangeBreakJudgement = (evt: React.FormEvent<HTMLInputElement>) => {
+  private handleChangeBreakJudgement = (evt: SyntheticEvent<HTMLInputElement>) => {
     const count = parseInt(evt.currentTarget.value);
     if (count >= 0) {
       const index = parseInt(evt.currentTarget.name.substring(6));
@@ -226,7 +226,7 @@ export class DxAchievementCalculator extends React.PureComponent<{}, State> {
     }
   };
 
-  private handleFillExample = (evt: React.FormEvent) => {
+  private handleFillExample = (evt: SyntheticEvent) => {
     evt.preventDefault();
     if (Math.random() > 0.5) {
       // 全人類ノ非想天則 EXPERT
@@ -237,7 +237,7 @@ export class DxAchievementCalculator extends React.PureComponent<{}, State> {
     }
   };
 
-  private handleReset = (evt: React.FormEvent) => {
+  private handleReset = (evt: SyntheticEvent) => {
     evt.preventDefault();
     location.assign('?');
   };

@@ -1,4 +1,4 @@
-import React, {ReactNode, useCallback} from 'react';
+import {memo, ReactNode, useCallback} from 'react';
 
 import {getChartTypeName} from '../../common/chart-type';
 import {Difficulty, getDifficultyClassName} from '../../common/difficulties';
@@ -30,7 +30,7 @@ interface Props {
   isCandidate?: boolean;
 }
 
-export const ChartRecordDataRow = React.memo((props: Props) => {
+export const ChartRecordDataRow = memo((props: Props) => {
   const {record, index, columns, isCandidate} = props;
   const renderColumn = useCallback(
     (c: ColumnType) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {SyntheticEvent} from 'react';
 
 import {ChartRecord} from '../../common/chart-record';
 import {
@@ -159,7 +159,7 @@ export class RootComponent extends React.PureComponent<{}, State> {
     this.analyzeRating();
   };
 
-  private analyzeRating = async (evt?: React.SyntheticEvent) => {
+  private analyzeRating = async (evt?: SyntheticEvent) => {
     if (evt) {
       evt.preventDefault();
     }

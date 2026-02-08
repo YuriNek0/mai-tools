@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {SyntheticEvent} from 'react';
 
 import {FullChartRecord} from '../common/chart-record';
 import {
@@ -80,11 +80,11 @@ export class RootComponent extends React.PureComponent<{}, State> {
     );
   }
 
-  private handleSelectRegion = (evt: React.SyntheticEvent<HTMLSelectElement>) => {
+  private handleSelectRegion = (evt: SyntheticEvent<HTMLSelectElement>) => {
     this.setState({region: evt.currentTarget.value as GameRegion});
   };
 
-  private handleSelectVersion = (evt: React.SyntheticEvent<HTMLSelectElement>) => {
+  private handleSelectVersion = (evt: SyntheticEvent<HTMLSelectElement>) => {
     this.setState({version: evt.currentTarget.value});
   };
 

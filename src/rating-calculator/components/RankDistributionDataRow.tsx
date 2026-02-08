@@ -1,4 +1,4 @@
-import React from 'react';
+import {memo} from 'react';
 
 import {RankDistributionRow} from './RankDistributionRow';
 
@@ -11,7 +11,7 @@ interface Props {
   perColumnClassnames: ReadonlyArray<string>;
 }
 
-export const RankDistributionDataRow = React.memo((props: Props) => {
+export const RankDistributionDataRow = memo((props: Props) => {
   const values: (string | number)[] = [props.rowHead];
   for (const key of props.columns) {
     const count = props.rankDist.get(key);

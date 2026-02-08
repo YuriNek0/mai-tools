@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react';
+import {useCallback, useRef, SyntheticEvent} from 'react';
 
 import {Language} from '../common/lang';
 import {useLanguage} from '../common/lang-react';
@@ -52,7 +52,7 @@ export const MobileCreateManual = () => {
     document.title = LinkNameByLang[lang];
   }, []);
 
-  const copyLink = useCallback((evt: React.SyntheticEvent) => {
+  const copyLink = useCallback((evt: SyntheticEvent) => {
     evt.preventDefault();
     if (inputRef.current) {
       setPageTitle();
@@ -64,7 +64,7 @@ export const MobileCreateManual = () => {
 
   const messages = MessagesByLang[lang];
   return (
-    <React.Fragment>
+    <>
       <h3>● {messages.title}</h3>
       <div>
         <p>{messages.desc}</p>
@@ -83,6 +83,6 @@ export const MobileCreateManual = () => {
           <li>{messages.chrome7}</li>
         </ol>
       </div>
-    </React.Fragment>
+    </>
   );
 };

@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import {useCallback, useState, SyntheticEvent} from 'react';
 
 import {Language} from '../common/lang';
 import {useLanguage} from '../common/lang-react';
@@ -68,13 +68,13 @@ export const MultiplierTable = () => {
 
   const [level, setLevel] = useState(13);
   const [achv, setAchv] = useState(100);
-  const handleLevelChange = useCallback((evt: React.SyntheticEvent<HTMLInputElement>) => {
+  const handleLevelChange = useCallback((evt: SyntheticEvent<HTMLInputElement>) => {
     const value = parseFloat(evt.currentTarget.value);
     if (!isNaN(value)) {
       setLevel(value);
     }
   }, []);
-  const handleAchvChange = useCallback((evt: React.SyntheticEvent<HTMLInputElement>) => {
+  const handleAchvChange = useCallback((evt: SyntheticEvent<HTMLInputElement>) => {
     const value = parseFloat(evt.currentTarget.value);
     if (!isNaN(value)) {
       setAchv(value);

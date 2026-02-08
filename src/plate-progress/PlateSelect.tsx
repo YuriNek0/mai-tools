@@ -1,10 +1,10 @@
-import React from 'react';
+import {SyntheticEvent} from 'react';
 
 import {VersionInfo} from './plate_info';
 
 interface Props {
   versionInfo?: VersionInfo;
-  onChange: (evt: React.SyntheticEvent<HTMLSelectElement>) => void;
+  onChange: (evt: SyntheticEvent<HTMLSelectElement>) => void;
 }
 
 export function PlateSelect(props: Props) {

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState, SyntheticEvent} from 'react';
 
 import {GameVersion} from '../../common/game-version';
 import {useLanguage} from '../../common/lang-react';
@@ -96,7 +96,7 @@ export const CandidateChartRecords = ({
   }, [songList, records, showPlayed, levelToShow, minorLvToShow]);
 
   const toggleShowMore = useCallback(
-    (evt: React.SyntheticEvent<HTMLAnchorElement>) => {
+    (evt: SyntheticEvent<HTMLAnchorElement>) => {
       evt.preventDefault();
       setShowAll(!showAll);
     },
@@ -108,7 +108,7 @@ export const CandidateChartRecords = ({
   }, []);
 
   const selectLv = useCallback(
-    (evt: React.SyntheticEvent<HTMLSelectElement>) => {
+    (evt: SyntheticEvent<HTMLSelectElement>) => {
       const majorLv = levels.find((lv) => evt.currentTarget.value === lv.title);
       if (levelToShow !== majorLv) {
         setMinorLvToShow(null);
@@ -118,7 +118,7 @@ export const CandidateChartRecords = ({
     [setLevelToShow],
   );
   const selectMinorLv = useCallback(
-    (evt: React.SyntheticEvent<HTMLSelectElement>) => {
+    (evt: SyntheticEvent<HTMLSelectElement>) => {
       const minorLv = parseFloat(evt.currentTarget.value);
       setMinorLvToShow(isNaN(minorLv) ? null : minorLv);
     },

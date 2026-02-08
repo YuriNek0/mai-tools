@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {SyntheticEvent} from 'react';
 
 export class PageFooter extends React.PureComponent {
-  private handleClick = (evt: React.SyntheticEvent) => {
+  private handleClick = (evt: SyntheticEvent) => {
     evt.preventDefault();
     window.close();
   };

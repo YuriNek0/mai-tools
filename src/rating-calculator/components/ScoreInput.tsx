@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import {SyntheticEvent, useCallback, useState} from 'react';
 
 import {ChartRecord} from '../../common/chart-record';
 import {Language} from '../../common/lang';
@@ -44,7 +44,7 @@ export const ScoreInput = ({setPlayerScores}: Props) => {
   const commonMessages = CommonMessages[lang];
   const messages = MessagesByLang[lang];
   const [showInput, setShowInput] = useState(false);
-  const handleRadioChange = useCallback((evt: React.FormEvent<HTMLInputElement>) => {
+  const handleRadioChange = useCallback((evt: SyntheticEvent<HTMLInputElement>) => {
     setShowInput(evt.currentTarget.value === '1');
   }, []);
 

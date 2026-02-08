@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import {useCallback, KeyboardEvent} from 'react';
 
 import {Difficulty, getDifficultyClassName} from '../common/difficulties';
 import {PlateType} from './plate_info';
@@ -18,7 +18,7 @@ export function PlateProgressTableCell(props: Props) {
       onClick(plateType, props.d);
     }
   }, []);
-  const handleKeyDown = useCallback((evt: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((evt: KeyboardEvent) => {
     if (evt.ctrlKey || evt.altKey || evt.metaKey || evt.shiftKey) {
       return;
     }
