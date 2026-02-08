@@ -57,15 +57,13 @@ export const ChartRecordDataRow = React.memo((props: Props) => {
           return getRankTitle(record.achievement);
         case ColumnType.NEXT_RANK:
           return record.nextRanks
-            ? Array.from(record.nextRanks.values()).map((r, idx) => (
-                <div key={idx}>{r.rank.minAchv + '%'}</div>
-              ))
+            ? Array.from(record.nextRanks.values()).map((r, idx) => <div key={idx}>{r.target}</div>)
             : '';
         case ColumnType.NEXT_RATING:
           return record.nextRanks
             ? Array.from(record.nextRanks.values()).map((r, idx) => (
                 <div key={idx}>
-                  {Math.floor(record.level * r.rank.factor * r.rank.minAchv).toFixed(0)}
+                  {Math.floor(r.rating)}
                   &nbsp;(+{r.minRt.toFixed(0)})
                 </div>
               ))

@@ -64,8 +64,12 @@ export const RatingOutput = ({
       (song) => song.debut === gameVer || song.debut === minVersionForNewSongs
     );
     const oldSongs = allSongProps?.filter((song) => song.debut < minVersionForNewSongs);
-    const fullNewChartsRating = newSongs ? calculateFullRating(newSongs, NUM_TOP_NEW_CHARTS) : 0;
-    const fullOldChartsRating = oldSongs ? calculateFullRating(oldSongs, NUM_TOP_OLD_CHARTS) : 0;
+    const fullNewChartsRating = newSongs
+      ? calculateFullRating(gameVer, newSongs, NUM_TOP_NEW_CHARTS)
+      : 0;
+    const fullOldChartsRating = oldSongs
+      ? calculateFullRating(gameVer, oldSongs, NUM_TOP_OLD_CHARTS)
+      : 0;
     return {newSongs, oldSongs, fullNewChartsRating, fullOldChartsRating};
   }, [songDatabase, allSongs, gameVer, gameRegion]);
 

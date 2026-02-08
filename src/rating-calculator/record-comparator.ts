@@ -1,5 +1,4 @@
 import {ChartRecord} from '../common/chart-record';
-import {RankDef} from '../common/rank-functions';
 import {ChartRecordWithRating} from './types';
 
 type RecordNumberProp = 'rating' | 'level' | 'achievement';
@@ -16,14 +15,14 @@ function compareSongsByStrAttr(a: ChartRecord, b: ChartRecord, f: RecordStringPr
 function compareSongsByNumAttr(
   a: ChartRecordWithRating,
   b: ChartRecordWithRating,
-  f: RecordNumberProp
+  f: RecordNumberProp,
 ) {
   return compareNumbers(a[f], b[f]);
 }
 
 export function compareSongsByRating(
   record1: ChartRecordWithRating,
-  record2: ChartRecordWithRating
+  record2: ChartRecordWithRating,
 ) {
   return (
     compareSongsByNumAttr(record1, record2, 'rating') ||
@@ -34,7 +33,7 @@ export function compareSongsByRating(
 
 export function compareCandidate(
   record1: ChartRecordWithRating,
-  record2: ChartRecordWithRating
+  record2: ChartRecordWithRating,
 ): number {
   const nextRating1 = record1.nextRanks.values().next().value;
   const nextRating2 = record2.nextRanks.values().next().value;
@@ -47,8 +46,8 @@ export function compareCandidate(
     // Put record1 first
     return -1;
   }
-  const costPerformance1 = nextRating1.minRt / (nextRating1.rank.minAchv - record1.achievement);
-  const costPerformance2 = nextRating2.minRt / (nextRating2.rank.minAchv - record2.achievement);
+  const costPerformance1 = nextRating1.minRt / nextRating1.cost;
+  const costPerformance2 = nextRating2.minRt / nextRating2.cost;
   return (
     compareNumbers(costPerformance1, costPerformance2) ||
     compareNumbers(nextRating1.minRt, nextRating2.minRt) ||
@@ -58,7 +57,7 @@ export function compareCandidate(
 
 export function compareSongsByNextRating(
   record1: ChartRecordWithRating,
-  record2: ChartRecordWithRating
+  record2: ChartRecordWithRating,
 ) {
   const nextRating1 = record1.nextRanks.values().next().value;
   const nextRating2 = record2.nextRanks.values().next().value;
@@ -70,7 +69,7 @@ export function compareSongsByNextRating(
 
 export function compareSongsByLevel(
   record1: ChartRecordWithRating,
-  record2: ChartRecordWithRating
+  record2: ChartRecordWithRating,
 ) {
   // smaller first
   return compareSongsByNumAttr(record2, record1, 'level');
@@ -84,18 +83,17 @@ export function compareSongsByName(record1: ChartRecord, record2: ChartRecord) {
   return compareSongsByStrAttr(record1, record2, 'songName');
 }
 
+// TODO: maybe remove this function because it no longer compares "next" rank
 export function compareSongsByNextRank(
   record1: ChartRecordWithRating,
-  record2: ChartRecordWithRating
+  record2: ChartRecordWithRating,
 ) {
-  const nextRank1: RankDef = record1.nextRanks.values().next().value.rank;
-  const nextRank2: RankDef = record2.nextRanks.values().next().value.rank;
-  return compareNumbers(nextRank1.minAchv, nextRank2.minAchv);
+  return compareNumbers(record1.achievement, record2.achievement);
 }
 
 export function compareSongsByChartType(
   record1: ChartRecordWithRating,
-  record2: ChartRecordWithRating
+  record2: ChartRecordWithRating,
 ) {
   const type1 = record1.chartType;
   const type2 = record2.chartType;

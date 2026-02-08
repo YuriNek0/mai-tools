@@ -1,3 +1,4 @@
+import {GameVersion} from './game-version';
 import {compareNumber} from './number-helper';
 import {getRankByAchievement, getRankDefinitions, RANK_SSS_PLUS, RankDef} from './rank-functions';
 import {SongProperties} from './song-props';
@@ -13,11 +14,15 @@ export function calculateRatingRange(lv: number, rank: RankDef) {
   return [minRating, Math.floor(lv * maxAchv * rank.factor)];
 }
 
-export function calculateFullRating(songs: ReadonlyArray<SongProperties>, count: number) {
+export function calculateFullRating(
+  gameVer: GameVersion,
+  songs: ReadonlyArray<SongProperties>,
+  count: number,
+) {
   let allLvs: number[] = [];
   for (const song of songs) {
     allLvs = allLvs.concat(
-      song.lv.filter((lv) => typeof lv === 'number').map((lv) => Math.abs(lv))
+      song.lv.filter((lv) => typeof lv === 'number').map((lv) => Math.abs(lv)),
     );
   }
   allLvs.sort(compareNumber);
@@ -26,13 +31,15 @@ export function calculateFullRating(songs: ReadonlyArray<SongProperties>, count:
   for (const lv of topLvs) {
     totalRating += Math.floor(lv * RANK_SSS_PLUS.minAchv * RANK_SSS_PLUS.factor);
   }
-  return totalRating;
+  // Since CiRCLE, All Perfect adds 1 point.
+  return gameVer >= GameVersion.CiRCLE ? totalRating + count : totalRating;
 }
 
 export function getAvg(sum: number, count: number) {
   return count ? (sum / count).toFixed(0) : 0;
 }
 
+/** CAUTION: Bonus point by All Perfect is NOT included. */
 export function getRating(level: number, achv: number) {
   const achievement = Math.min(achv, RANK_SSS_PLUS.minAchv);
   const rank = getRankByAchievement(achievement);

@@ -16,6 +16,7 @@ export const NUM_TOP_OLD_CHARTS = 35;
  * If we don't find the inner level for the chart, use its estimated level and move on.
  */
 function getRecordWithRating(
+  gameVer: GameVersion,
   record: ChartRecord,
   songProps?: SongProperties
 ): ChartRecordWithRating {
@@ -25,9 +26,12 @@ function getRecordWithRating(
       record.level = Math.abs(lv);
     }
   }
+  const baseRating = getRating(record.level, record.achievement);
+  const bonusPoint =
+    gameVer >= GameVersion.CiRCLE && record.fcap && record.fcap.includes('AP') ? 1 : 0;
   return {
     ...record,
-    rating: getRating(record.level, record.achievement),
+    rating: baseRating + bonusPoint,
   };
 }
 
@@ -69,7 +73,7 @@ export function analyzePlayerRating(
     if (excludeSongsWithNoProps && !songProps) {
       continue;
     }
-    const recordWithRating = getRecordWithRating(record, songProps);
+    const recordWithRating = getRecordWithRating(gameVer, record, songProps);
     if (isNewChart(record, songProps, gameVer, includePreviousVerInNewCharts)) {
       newChartRecords.push(recordWithRating);
     } else {

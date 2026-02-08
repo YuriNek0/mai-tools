@@ -89,9 +89,9 @@ export const CandidateChartRecords = ({
       ? {title: levelToShow.title, minLv: minorLvToShow, maxLv: minorLvToShow}
       : levelToShow;
     return showPlayed
-      ? getCandidateCharts(records, topCount, poolSize, lvFilter)
+      ? getCandidateCharts(songDatabase.gameVer, records, topCount, poolSize, lvFilter)
       : songList
-      ? getNotPlayedCharts(songList, records, minRating, poolSize, lvFilter)
+      ? getNotPlayedCharts(songDatabase.gameVer, songList, records, minRating, poolSize, lvFilter)
       : [];
   }, [songList, records, showPlayed, levelToShow, minorLvToShow]);
 
