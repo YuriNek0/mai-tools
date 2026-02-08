@@ -53,13 +53,17 @@ export const RatingOutput = ({
   songDatabase,
 }: Props) => {
   const state = useMemo<State>(() => {
+    // Since CiRCLE, charts debuted in the previous version (PRiSM PLUS) are treated as new charts.
+    const minVersionForNewSongs = gameVer >= GameVersion.CiRCLE ? gameVer - 1 : gameVer;
     const allSongProps = allSongs
       ? songDatabase.getPropsForSongs(allSongs)
       : gameRegion === GameRegion.Jp
       ? songDatabase.getAllProps()
       : null;
-    const newSongs = allSongProps?.filter((song) => song.debut === gameVer);
-    const oldSongs = allSongProps?.filter((song) => song.debut < gameVer);
+    const newSongs = allSongProps?.filter(
+      (song) => song.debut === gameVer || song.debut === minVersionForNewSongs
+    );
+    const oldSongs = allSongProps?.filter((song) => song.debut < minVersionForNewSongs);
     const fullNewChartsRating = newSongs ? calculateFullRating(newSongs, NUM_TOP_NEW_CHARTS) : 0;
     const fullOldChartsRating = oldSongs ? calculateFullRating(oldSongs, NUM_TOP_OLD_CHARTS) : 0;
     return {newSongs, oldSongs, fullNewChartsRating, fullOldChartsRating};
