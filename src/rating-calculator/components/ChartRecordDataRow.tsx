@@ -64,7 +64,7 @@ export const ChartRecordDataRow = React.memo((props: Props) => {
             ? Array.from(record.nextRanks.values()).map((r, idx) => (
                 <div key={idx}>
                   {Math.floor(r.rating)}
-                  &nbsp;(+{r.minRt.toFixed(0)})
+                  &nbsp;(+{r.delta.toFixed(0)})
                 </div>
               ))
             : '';
@@ -72,7 +72,7 @@ export const ChartRecordDataRow = React.memo((props: Props) => {
           return Math.floor(record.rating).toString();
       }
     },
-    [index, record, isCandidate]
+    [index, record, isCandidate],
   );
   return (
     <ChartRecordRow

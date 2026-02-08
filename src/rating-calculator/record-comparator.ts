@@ -46,11 +46,11 @@ export function compareCandidate(
     // Put record1 first
     return -1;
   }
-  const costPerformance1 = nextRating1.minRt / nextRating1.cost;
-  const costPerformance2 = nextRating2.minRt / nextRating2.cost;
+  const costPerformance1 = nextRating1.delta / nextRating1.cost;
+  const costPerformance2 = nextRating2.delta / nextRating2.cost;
   return (
     compareNumbers(costPerformance1, costPerformance2) ||
-    compareNumbers(nextRating1.minRt, nextRating2.minRt) ||
+    compareNumbers(nextRating1.delta, nextRating2.delta) ||
     compareSongsByNumAttr(record1, record2, 'level')
   );
 }
@@ -62,7 +62,7 @@ export function compareSongsByNextRating(
   const nextRating1 = record1.nextRanks.values().next().value;
   const nextRating2 = record2.nextRanks.values().next().value;
   return (
-    compareNumbers(nextRating1.minRt, nextRating2.minRt) ||
+    compareNumbers(nextRating1.delta, nextRating2.delta) ||
     compareSongsByNumAttr(record1, record2, 'level')
   );
 }

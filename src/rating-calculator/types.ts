@@ -1,8 +1,10 @@
 import {ChartRecord} from '../common/chart-record';
 
 export interface ChartAchievementTarget {
-  minRt: number;
+  /** Rating = absolute rating points if this target is achieved. */
   rating: number;
+  /** Delta = rating increase if this target is achieved. */
+  delta: number;
   target: string;
   /**
    * Cost = achievement needed to reach the target.

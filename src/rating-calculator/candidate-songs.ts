@@ -37,7 +37,7 @@ function getNextRating(
       const rating = 1 + minRt;
       if (rating > lowestRating) {
         ratingByRank.set('AP', {
-          minRt: rating - lowestRating,
+          delta: rating - lowestRating,
           rating,
           target: 'AP',
           // Use 100.85% as the achievement for All Perfect.
@@ -62,7 +62,7 @@ function getNextRating(
     const [minRt] = calculateRatingRange(record.level, rank);
     if (minRt > lowestRating) {
       ratingByRank.set(rank.title, {
-        minRt: minRt - lowestRating,
+        delta: minRt - lowestRating,
         rating: minRt,
         target: rank.minAchv + '%',
         cost: rank.minAchv - record.achievement,
