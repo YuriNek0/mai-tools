@@ -1,6 +1,5 @@
 import {shuffleArray} from '../common/array-util';
 import {DIFFICULTIES} from '../common/difficulties';
-import {GameVersion} from '../common/game-version';
 import {LevelDef} from '../common/level-helper';
 import {
   getRankDefinitions,
@@ -19,7 +18,7 @@ const LOWEST_RANK_FOR_CANDIDATE = getRankIndexByAchievement(94);
 type NextRatingCandidate = Pick<ChartRecordWithRating, 'achievement' | 'level' | 'fcap'>;
 
 function getNextRating(
-  gameVer: GameVersion,
+  includeAllPerfect: boolean,
   record: NextRatingCandidate,
   lowestRating: number,
   numOfRanks: number,
@@ -27,10 +26,9 @@ function getNextRating(
   const ratingByRank = new Map<string, ChartAchievementTarget>();
 
   if (record.achievement >= RANK_SSS_PLUS.minAchv) {
-    if (gameVer < GameVersion.CiRCLE) {
+    if (!includeAllPerfect) {
       return ratingByRank;
     } else if (!record.fcap || !record.fcap.includes('AP')) {
-      // Since CiRCLE, All Perfect adds one bonus point.
       const [minRt] = calculateRatingRange(record.level, RANK_SSS_PLUS);
       const rating = 1 + minRt;
       if (rating > lowestRating) {
@@ -76,7 +74,7 @@ function getNextRating(
 }
 
 export function getCandidateCharts(
-  gameVer: GameVersion,
+  includeAllPerfect: boolean,
   records: ReadonlyArray<ChartRecordWithRating>,
   topCount: number,
   count: number,
@@ -90,7 +88,7 @@ export function getCandidateCharts(
     const record = records[i];
     if (requiredLv && (record.level < requiredLv.minLv || record.level > requiredLv.maxLv))
       continue;
-    const ratingByRank = getNextRating(gameVer, record, Math.floor(record.rating), 2);
+    const ratingByRank = getNextRating(includeAllPerfect, record, Math.floor(record.rating), 2);
     if (!ratingByRank.size) {
       continue;
     }
@@ -102,7 +100,7 @@ export function getCandidateCharts(
     const record = records[i];
     if (requiredLv && (record.level < requiredLv.minLv || record.level > requiredLv.maxLv))
       continue;
-    const ratingByRank = getNextRating(gameVer, record, minRating, 2);
+    const ratingByRank = getNextRating(includeAllPerfect, record, minRating, 2);
     if (!ratingByRank.size) {
       continue;
     }
@@ -123,7 +121,7 @@ export function getCandidateCharts(
  * @param requiredLv Required level (choose only charts of this level)
  */
 export function getNotPlayedCharts(
-  gameVer: GameVersion,
+  includeAllPerfect: boolean,
   songList: ReadonlyArray<SongProperties>,
   records: ReadonlyArray<ChartRecordWithRating>,
   minRating: number,
@@ -170,7 +168,7 @@ export function getNotPlayedCharts(
         achievement: 0,
         fcap: null,
       };
-      const ratingByRank = getNextRating(gameVer, record, minRating, 1);
+      const ratingByRank = getNextRating(includeAllPerfect, record, minRating, 1);
       if (!ratingByRank.size) {
         continue;
       }

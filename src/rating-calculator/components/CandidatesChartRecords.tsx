@@ -5,6 +5,7 @@ import {useLanguage} from '../../common/lang-react';
 import {getMaxMinorBeforePlus, getMinMinorOfPlus, LevelDef} from '../../common/level-helper';
 import {RANK_SSS_PLUS} from '../../common/rank-functions';
 import {SongDatabase, SongProperties} from '../../common/song-props';
+import {loadUserPreference, saveUserPreference, UserPreference} from '../../common/user-preference';
 import {getCandidateCharts, getNotPlayedCharts} from '../candidate-songs';
 import {CommonMessages} from '../common-messages';
 import {
@@ -81,6 +82,17 @@ export const CandidateChartRecords = ({
         : 0),
   );
 
+  // Since CiRCLE, All Perfect adds one bonus point.
+  const hasAllPerfectBonus = songDatabase.gameVer >= GameVersion.CiRCLE;
+  const [includeAp, setIncludeAp] = useState(
+    Boolean(loadUserPreference(UserPreference.IncludeAllPerfect)),
+  );
+  const toggleIncludeAp = useCallback((evt: SyntheticEvent<HTMLInputElement>) => {
+    const includeAp = evt.currentTarget.checked;
+    saveUserPreference(UserPreference.IncludeAllPerfect, String(includeAp));
+    setIncludeAp(evt.currentTarget.checked);
+  }, []);
+
   const candidates = useMemo(() => {
     const poolSize = isCurrentVersion
       ? NEW_CANDIDATE_SONGS_POOL_SIZE
@@ -88,12 +100,13 @@ export const CandidateChartRecords = ({
     const lvFilter = minorLvToShow
       ? {title: levelToShow.title, minLv: minorLvToShow, maxLv: minorLvToShow}
       : levelToShow;
+    const includeAllPerfect = hasAllPerfectBonus && includeAp;
     return showPlayed
-      ? getCandidateCharts(songDatabase.gameVer, records, topCount, poolSize, lvFilter)
+      ? getCandidateCharts(includeAllPerfect, records, topCount, poolSize, lvFilter)
       : songList
-        ? getNotPlayedCharts(songDatabase.gameVer, songList, records, minRating, poolSize, lvFilter)
+        ? getNotPlayedCharts(includeAllPerfect, songList, records, minRating, poolSize, lvFilter)
         : [];
-  }, [songList, records, showPlayed, levelToShow, minorLvToShow]);
+  }, [songDatabase, songList, records, showPlayed, levelToShow, minorLvToShow, includeAp]);
 
   const toggleShowMore = useCallback(
     (evt: SyntheticEvent<HTMLAnchorElement>) => {
@@ -168,6 +181,14 @@ export const CandidateChartRecords = ({
           showPlayed={showPlayed}
           toggleShowPlayed={toggleShowPlayed}
         />
+      )}
+      {hasAllPerfectBonus && (
+        <div>
+          <label>
+            <input type="checkbox" checked={includeAp} onChange={toggleIncludeAp} />{' '}
+            {messages.includeAllPerfect}
+          </label>
+        </div>
       )}
       <div>
         <select

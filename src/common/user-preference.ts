@@ -7,6 +7,8 @@ export const enum UserPreference {
   TableDisplay = 'visualizerTableDisplay',
   TargetRating = 'targetRating',
   InternalLvOverride = 'internalLvOverride',
+  // Whether to include All Perfect when calculating candidate charts for rating.
+  IncludeAllPerfect = 'includeAllPerfect',
 }
 
 export function loadUserPreference(key: UserPreference) {
