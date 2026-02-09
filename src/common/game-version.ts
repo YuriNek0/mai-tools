@@ -32,7 +32,7 @@ const VERSION_NAMES = [
   'BUDDiES PLUS',
   'PRiSM (beta)', // 23
   'PRiSM PLUS (beta)',
-  'CiRCLE (experimental)', // 25
+  'CiRCLE (beta)', // 25
 ];
 
 export const enum GameVersion {
@@ -53,7 +53,7 @@ export const LATEST_VERSION = GameVersion.CiRCLE;
 export function validateGameVersion(
   ver: number | string | null,
   minVer: number,
-  maxVer: GameVersion = LATEST_VERSION
+  maxVer: GameVersion = LATEST_VERSION,
 ): GameVersion {
   const numVer = typeof ver === 'string' ? parseInt(ver) : ver;
   if (!ver || isNaN(numVer)) {
