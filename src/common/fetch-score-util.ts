@@ -52,7 +52,7 @@ export function getAchievement(row: HTMLElement, isFriendScore = false): number 
 export function getApFcStatus(row: HTMLElement, isFriendScore = false) {
   const img = isFriendScore
     ? row.querySelector('tr:last-child td:last-child img:nth-child(2)')
-    : row.children[0].querySelector('img.f_r:nth-last-of-type(2)');
+    : row.children[0]?.querySelector('img.f_r:nth-last-of-type(2)');
   if (!(img instanceof HTMLImageElement)) {
     return null;
   }
@@ -69,7 +69,7 @@ export function getApFcStatus(row: HTMLElement, isFriendScore = false) {
 export function getSyncStatus(row: HTMLElement, isFriendScore = false) {
   const img = isFriendScore
     ? row.querySelector('tr:last-child td:last-child img:first-child')
-    : row.children[0].querySelector('img.f_r:nth-last-of-type(3)');
+    : row.children[0]?.querySelector('img.f_r:nth-last-of-type(3)');
   if (!(img instanceof HTMLImageElement)) {
     return null;
   }
