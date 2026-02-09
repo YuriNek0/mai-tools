@@ -6,7 +6,7 @@ const VERSIONS = (function () {
     a.push(i.toFixed(0));
   }
   a.push(`0-${GameVersion.FiNALE}`);
-  for (let i = GameVersion.DX; i < LATEST_VERSION; i++) {
+  for (let i = GameVersion.DX; i <= LATEST_VERSION; i++) {
     a.push(i.toFixed(0));
   }
   return a;
