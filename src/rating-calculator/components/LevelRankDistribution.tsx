@@ -39,7 +39,8 @@ export class LevelRankDistribution extends React.PureComponent<Props> {
   render() {
     const {gameVer, chartRecords, topLeftCell, topChartsCount} = this.props;
     const topRecords = chartRecords.slice(0, topChartsCount);
-    const rankMap = getRankMap(topRecords);
+    const includeAllPerfect = gameVer >= GameVersion.CiRCLE;
+    const rankMap = getRankMap(topRecords, includeAllPerfect);
     const recordsPerLevel = getRecordsPerLevel(gameVer, topRecords);
     return (
       <table className="rankDistributionTable">
@@ -57,7 +58,7 @@ export class LevelRankDistribution extends React.PureComponent<Props> {
               key={level}
               rowHead={level}
               columns={rankMap.keys()}
-              rankDist={getRankDistribution(records)}
+              rankDist={getRankDistribution(records, includeAllPerfect)}
               baseCellClassname={LEVEL_RANK_CELL_BASE_CLASSNAME}
               perColumnClassnames={LEVEL_RANK_CELL_CLASSNAMES}
             />
