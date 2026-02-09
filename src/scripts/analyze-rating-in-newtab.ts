@@ -159,7 +159,9 @@ declare global {
       scoreList = scoreList.concat(
         scoresByDifficulty.filter((r) => {
           const key = getSongNicknameWithChartType(r.songName, r.genre, r.chartType) + r.difficulty;
-          return !visitedCharts.has(key);
+          const visited = visitedCharts.has(key);
+          visitedCharts.add(key);
+          return !visited;
         }),
       );
     }
