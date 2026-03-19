@@ -50,15 +50,19 @@ const MagicSauceByVersion: Map<GameVersion, string> = new Map([
   ],
   [
     GameVersion.CiRCLE,
+    'aHR0cHM6Ly9teWppYW4uZ2l0aHViLmlvL1RhaXdhbi1pbmRlcGVuZGVuY2UvZXh0ZXJuYWwvbWFnaWMtY2lyY2xlLmpzb24=',
+  ],
+  [
+    GameVersion.CiRCLE_PLUS,
     'aHR0cHM6Ly9teWppYW4uZ2l0aHViLmlvL1RhaXdhbi1pbmRlcGVuZGVuY2UvZXh0ZXJuYWwvbWFnaWMuanNvbg==',
   ],
 ]);
 
 export const RATING_CALCULATOR_SUPPORTED_VERSIONS: GameVersion[] = Array.from(
-  MagicSauceByVersion.keys()
+  MagicSauceByVersion.keys(),
 ).sort();
 
-const FALLBACK_VERSION = GameVersion.PRiSM_PLUS;
+const FALLBACK_VERSION = GameVersion.CiRCLE;
 
 export class MagicApi {
   private async fetchMagic(gameVer: GameVersion): Promise<OldSongProperties[]> {
@@ -94,7 +98,7 @@ export class MagicApi {
           return expiredValue;
         }
       },
-      () => this.fetchMagic(gameVer).catch<SongProperties[]>(() => [])
+      () => this.fetchMagic(gameVer).catch<SongProperties[]>(() => []),
     );
     if (!songs.length) {
       expireCache(CACHE_KEY_PREFIX + gameVer);
