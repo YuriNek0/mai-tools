@@ -1,5 +1,7 @@
 ## ⚠️ Notice: Limited Maintenance
 
+Jul 11, 2025
+
 This project is no longer actively developed. Features may break at any time and may or may not receive fixes. 
 
 # Tools for maimai
