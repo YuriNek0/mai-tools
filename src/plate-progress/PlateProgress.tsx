@@ -11,29 +11,29 @@ const BASE_URL = 'https://myjian.github.io/Taiwan-independence/external/plate-in
 
 interface Props {
   region: GameRegion;
-  currentVersion: GameVersion;
-  version: string;
+  latestVersion: GameVersion;
+  selectedVersion: string;
   playerScores: FullChartRecord[];
 }
 
 export function PlateProgress(props: Props) {
-  const {region, version, currentVersion} = props;
+  const {region, selectedVersion, latestVersion} = props;
   const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    fetch(`${BASE_URL}/${region}${version}.json`).then(async (res) => {
+    fetch(`${BASE_URL}/${region}${selectedVersion}.json`).then(async (res) => {
       if (res.ok) {
         const info = await res.json();
         console.log(info);
-        setVersionInfo(sanitizeVersionInfo(info, region, currentVersion));
+        setVersionInfo(sanitizeVersionInfo(info, region, latestVersion));
         setError('');
       } else {
         setVersionInfo(null);
         setError(res.statusText);
       }
     });
-  }, [region, version]);
+  }, [region, selectedVersion, latestVersion]);
 
   return (
     <div>

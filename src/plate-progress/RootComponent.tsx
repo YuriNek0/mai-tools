@@ -1,4 +1,4 @@
-import React, {SyntheticEvent} from 'react';
+import {SyntheticEvent, useCallback, useEffect, useRef, useState} from 'react';
 
 import {FullChartRecord} from '../common/chart-record';
 import {
@@ -8,90 +8,37 @@ import {
   isMaimaiNetOrigin,
   MAIMAI_NET_ORIGINS,
 } from '../common/game-region';
-import {GameVersion, LATEST_VERSION, validateGameVersion} from '../common/game-version';
+import {LATEST_VERSION, validateGameVersion} from '../common/game-version';
 import {getInitialLanguage, Language} from '../common/lang';
 import {QueryParam} from '../common/query-params';
 import {PlateProgress} from './PlateProgress';
 import {VersionSelect} from './VersionSelect';
 
-interface State {
-  lang: Language;
-  progress: string;
-  region: GameRegion;
-  currentVersion: GameVersion;
-  version: string;
-  playerName: string | null;
-  friendIdx: string | null;
-  playerScores: FullChartRecord[];
-}
+export const RootComponent = () => {
+  const referrerRef = useRef<string | null>(document.referrer && new URL(document.referrer).origin);
 
-export class RootComponent extends React.PureComponent<{}, State> {
-  private referrer = document.referrer && new URL(document.referrer).origin;
+  const queryParams = new URLSearchParams(location.search);
+  const friendIdx = queryParams.get(QueryParam.FriendIdx);
+  const playerName = queryParams.get(QueryParam.PlayerName);
+  const gameVerParam = queryParams.get(QueryParam.GameVersion);
+  const latestVer = validateGameVersion(gameVerParam, LATEST_VERSION);
+  const lang = getInitialLanguage();
 
-  constructor(props: {}) {
-    super(props);
-    const queryParams = new URLSearchParams(location.search);
-    const friendIdx = queryParams.get(QueryParam.FriendIdx);
-    const playerName = queryParams.get(QueryParam.PlayerName);
-    const gameVerParam = queryParams.get(QueryParam.GameVersion);
-    const gameVer = validateGameVersion(gameVerParam, LATEST_VERSION);
-    const region = getGameRegionFromShortString(queryParams.get(QueryParam.GameRegion));
-    const lang = getInitialLanguage();
+  const [region, setRegion] = useState(() =>
+    getGameRegionFromShortString(queryParams.get(QueryParam.GameRegion)),
+  );
+  const [version, setVersion] = useState((latestVer - 1).toString());
+  const [progress, setProgress] = useState('');
+  const [playerScores, setPlayerScores] = useState<FullChartRecord[]>([]);
+
+  useEffect(() => {
     updateDocumentTitle(lang);
+  }, [lang]);
 
-    this.state = {
-      lang,
-      region,
-      currentVersion: gameVer,
-      version: (gameVer - 1).toString(),
-      friendIdx,
-      playerName,
-      progress: '',
-      playerScores: [],
-    };
+  const postMessageToOpener = useCallback((data: {action: string; payload?: string | number}) => {
     if (window.opener) {
-      this.initWindowCommunication();
-    }
-  }
-
-  render() {
-    const {playerName, region, version, progress, playerScores, currentVersion} = this.state;
-    return (
-      <div>
-        <select onChange={this.handleSelectRegion} value={region}>
-          <option value="" disabled>
-            == Game Region ==
-          </option>
-          <option value={GameRegion.Jp}>Japan</option>
-          <option value={GameRegion.Intl}>International</option>
-        </select>
-        <br />
-        <VersionSelect version={version} onChange={this.handleSelectVersion} />
-        <br />
-        <h2>Player: {playerName}</h2>
-        {progress ? <div>{progress}</div> : null}
-        <PlateProgress
-          region={region}
-          currentVersion={currentVersion}
-          version={version}
-          playerScores={playerScores}
-        />
-      </div>
-    );
-  }
-
-  private handleSelectRegion = (evt: SyntheticEvent<HTMLSelectElement>) => {
-    this.setState({region: evt.currentTarget.value as GameRegion});
-  };
-
-  private handleSelectVersion = (evt: SyntheticEvent<HTMLSelectElement>) => {
-    this.setState({version: evt.currentTarget.value});
-  };
-
-  private postMessageToOpener(data: {action: string; payload?: string | number}) {
-    if (window.opener) {
-      if (this.referrer) {
-        window.opener.postMessage(data, this.referrer);
+      if (referrerRef.current) {
+        window.opener.postMessage(data, referrerRef.current);
       } else {
         // Unfortunately, document.referrer is not set when mai-tools is run on localhost.
         // Send message to all maimai net origins and pray that one of them will respond.
@@ -100,38 +47,78 @@ export class RootComponent extends React.PureComponent<{}, State> {
         }
       }
     }
-  }
+  }, []);
 
-  private initWindowCommunication = () => {
-    window.addEventListener('message', (evt) => {
+  const handleWindowMessage = useCallback(
+    (evt: MessageEvent) => {
       if (isMaimaiNetOrigin(evt.origin)) {
-        this.referrer = evt.origin;
+        referrerRef.current = evt.origin;
         console.log(evt.origin, evt.data);
         switch (evt.data.action) {
           case 'showProgress':
-            this.setState({
-              progress: evt.data.payload,
-            });
+            setProgress(evt.data.payload);
             break;
           case 'setPlayerScore':
-            this.setState({
-              playerScores: evt.data.payload,
-              region: getGameRegionFromOrigin(evt.origin),
-            });
+            setPlayerScores(evt.data.payload);
+            setRegion(getGameRegionFromOrigin(evt.origin));
             break;
         }
       }
-    });
-    const {friendIdx, lang} = this.state;
-    if (friendIdx) {
-      // Analyze friend rating
-      this.postMessageToOpener({action: 'fetchFriendScoresFull', payload: friendIdx});
-    } else {
-      // Analyze self rating
-      this.postMessageToOpener({action: 'fetchScoresFull', payload: lang});
+    },
+    [referrerRef, setProgress, setPlayerScores, setRegion],
+  );
+
+  useEffect(() => {
+    if (window.opener) {
+      window.addEventListener('message', handleWindowMessage);
+      if (friendIdx) {
+        postMessageToOpener({action: 'fetchFriendScoresFull', payload: friendIdx});
+      } else {
+        postMessageToOpener({action: 'fetchScoresFull', payload: lang});
+      }
+      return () => {
+        window.removeEventListener('message', handleWindowMessage);
+      };
     }
-  };
-}
+  }, [friendIdx, lang, postMessageToOpener, handleWindowMessage]);
+
+  const handleSelectRegion = useCallback(
+    (evt: SyntheticEvent<HTMLSelectElement>) => {
+      setRegion(evt.currentTarget.value as GameRegion);
+    },
+    [setRegion],
+  );
+
+  const handleSelectVersion = useCallback(
+    (evt: SyntheticEvent<HTMLSelectElement>) => {
+      setVersion(evt.currentTarget.value);
+    },
+    [setVersion],
+  );
+
+  return (
+    <div>
+      <select onChange={handleSelectRegion} value={region}>
+        <option value="" disabled>
+          == Game Region ==
+        </option>
+        <option value={GameRegion.Jp}>Japan</option>
+        <option value={GameRegion.Intl}>International</option>
+      </select>
+      <br />
+      <VersionSelect version={version} onChange={handleSelectVersion} />
+      <br />
+      <h2>Player: {playerName}</h2>
+      {progress ? <div>{progress}</div> : null}
+      <PlateProgress
+        region={region}
+        latestVersion={latestVer}
+        selectedVersion={version}
+        playerScores={playerScores}
+      />
+    </div>
+  );
+};
 
 function updateDocumentTitle(lang: Language) {
   document.title = {

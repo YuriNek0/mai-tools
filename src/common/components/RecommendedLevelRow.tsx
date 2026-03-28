@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {getMaimaiSongsLink} from '../arcade-songs';
 import {GameRegion} from '../game-region';
 import {GameVersion} from '../game-version';
@@ -14,34 +12,37 @@ interface Props {
   includeOldVersions?: boolean;
 }
 
-export class RecommendedLevelRow extends React.PureComponent<Props> {
-  render() {
-    const {gameRegion, gameVer, rankTitle, recLv, includeOldVersions} = this.props;
-    const officialLv = getOfficialLevel(gameVer, recLv.lv);
-    const internalLv = recLv.lv.toFixed(1);
-    const minGameVer = includeOldVersions ? 0 : gameVer;
-    return (
-      <tr>
-        <td className="recLvCell">
-          <a
-            href={getMaimaiSongsLink(internalLv, true, gameRegion, minGameVer, gameVer)}
-            target="_blank"
-          >
-            {internalLv}
-          </a>{' '}
-          (
-          <a
-            href={getMaimaiSongsLink(officialLv, false, gameRegion, minGameVer, gameVer)}
-            target="_blank"
-          >
-            {officialLv}
-          </a>
-          )
-        </td>
-        <td>{rankTitle}</td>
-        <td>{recLv.minAchv.toFixed(4)}%</td>
-        <td>{recLv.rating}</td>
-      </tr>
-    );
-  }
-}
+export const RecommendedLevelRow = ({
+  gameRegion,
+  gameVer,
+  rankTitle,
+  recLv,
+  includeOldVersions,
+}: Props) => {
+  const officialLv = getOfficialLevel(gameVer, recLv.lv);
+  const internalLv = recLv.lv.toFixed(1);
+  const minGameVer = includeOldVersions ? 0 : gameVer;
+  return (
+    <tr>
+      <td className="recLvCell">
+        <a
+          href={getMaimaiSongsLink(internalLv, true, gameRegion, minGameVer, gameVer)}
+          target="_blank"
+        >
+          {internalLv}
+        </a>{' '}
+        (
+        <a
+          href={getMaimaiSongsLink(officialLv, false, gameRegion, minGameVer, gameVer)}
+          target="_blank"
+        >
+          {officialLv}
+        </a>
+        )
+      </td>
+      <td>{rankTitle}</td>
+      <td>{recLv.minAchv.toFixed(4)}%</td>
+      <td>{recLv.rating}</td>
+    </tr>
+  );
+};

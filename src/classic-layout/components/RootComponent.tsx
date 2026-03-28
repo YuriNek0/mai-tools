@@ -1,4 +1,4 @@
-import React from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {formatDate} from '../../common/date-util';
 import {getDifficultyName} from '../../common/difficulties';
@@ -39,7 +39,7 @@ function getQueryParam(qp: URLSearchParams, key: string, fallback?: string) {
   return value;
 }
 
-function parseQueryParams(qp: URLSearchParams, dft = defaultPlayRecord) {
+function parseQueryParams(qp: URLSearchParams, dft = defaultPlayRecord): PlayRecord {
   const date = getQueryParam(qp, QueryParam.Date, dft.date);
   const place = getQueryParam(qp, QueryParam.Place, 'DX');
   const track = getQueryParam(qp, QueryParam.Track, dft.track);
@@ -66,155 +66,157 @@ function parseQueryParams(qp: URLSearchParams, dft = defaultPlayRecord) {
   };
 }
 
-interface RootComponentState {
+interface PlayRecord {
   songTitle: string;
   achievement: number;
   noteJudgements: Map<NoteType, Record<StrictJudgement, number>>;
-  difficulty?: string;
+  difficulty: string | undefined;
   track: string;
   date: string;
   place: string;
-  highScore?: boolean;
-  combo?: string;
-  syncStatus?: string;
-  songImg?: string;
-  rankImg: Map<string, string>;
-  apFcImg?: string;
-  syncImg?: string;
-  showError?: boolean;
+  highScore: boolean;
+  combo: string;
+  syncStatus: string;
 }
 
-export class RootComponent extends React.PureComponent<{}, RootComponentState> {
-  private referrer = document.referrer && new URL(document.referrer).origin;
+export const RootComponent = () => {
+  const referrerRef = useRef(document.referrer && new URL(document.referrer).origin);
+  const [showError, setShowError] = useState(false);
+  const [rankImg, setRankImg] = useState(new Map<string, string>());
+  const [songImg, setSongImg] = useState<string>();
+  const [apFcImg, setApFcImg] = useState<string>();
+  const [syncImg, setSyncImg] = useState<string>();
 
-  constructor(props: {}) {
-    super(props);
+  const playRecord = useMemo<PlayRecord>(() => {
     const qp = new URLSearchParams(location.search);
     try {
-      this.state = {
-        ...parseQueryParams(qp),
-        rankImg: new Map(),
-      };
+      return parseQueryParams(qp);
     } catch (e) {
-      console.error((e as Error).message);
-      console.error((e as Error).stack);
-      this.state = {
-        ...parseQueryParams(new URLSearchParams()),
-        rankImg: new Map(),
-        showError: true,
-      };
-    }
-  }
-
-  componentDidMount() {
-    document.title = this.state.songTitle + ' - maimai classic score layout';
-    window.addEventListener('message', this.handleWindowMessage);
-    this.sendMessageToOpener({action: 'ready'});
-  }
-
-  render() {
-    const {
-      achievement,
-      combo,
-      date,
-      place,
-      difficulty,
-      highScore,
-      noteJudgements,
-      songTitle,
-      track,
-      songImg,
-      apFcImg,
-      rankImg,
-      syncImg,
-      syncStatus,
-      showError,
-    } = this.state;
-    return (
-      <React.Fragment>
-        <div className="widthLimit">
-          <div className="container">
-            <PageTitle />
-            <SectionSep />
-            {showError ? (
-              <div className="error">Failed to parse input. Please contact the developer!</div>
-            ) : (
-              <ScorePage
-                achievement={achievement}
-                combo={combo}
-                date={date}
-                place={place}
-                difficulty={difficulty}
-                highScore={highScore}
-                noteJudgements={noteJudgements}
-                songTitle={songTitle}
-                track={track}
-                syncStatus={syncStatus}
-                songImgSrc={songImg}
-                apFcImg={apFcImg}
-                rankImg={rankImg}
-                syncImg={syncImg}
-                fetchRankImage={this.fetchRankImage}
-              />
-            )}
-            <SectionSep />
-            <PageFooter />
-          </div>
-        </div>
-        <CreditInfo />
-      </React.Fragment>
-    );
-  }
-
-  private sendMessageToOpener(data: MessageType) {
-    if (window.opener) {
-      console.log('sending message to opener', data);
-      if (this.referrer) {
-        window.opener.postMessage(data, this.referrer);
+      if (e instanceof Error) {
+        console.error(e.message);
+        console.error(e.stack);
       } else {
-        // Unfortunately, document.referrer is not set when mai-tools is run on localhost.
-        // Send message to all maimai net origins and pray that one of them will respond.
-        for (const origin of MAIMAI_NET_ORIGINS) {
-          window.opener.postMessage(data, origin);
+        console.error(e);
+      }
+      setShowError(true);
+      return parseQueryParams(new URLSearchParams());
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    document.title = playRecord.songTitle + ' - maimai classic score layout';
+  }, [playRecord.songTitle]);
+
+  const sendMessageToOpener = useCallback(
+    (data: MessageType) => {
+      if (window.opener) {
+        console.log('sending message to opener', data);
+        if (referrerRef.current) {
+          window.opener.postMessage(data, referrerRef.current);
+        } else {
+          // Unfortunately, document.referrer is not set when mai-tools is run on localhost.
+          // Send message to all maimai net origins and pray that one of them will respond.
+          for (const origin of MAIMAI_NET_ORIGINS) {
+            window.opener.postMessage(data, origin);
+          }
         }
       }
-    }
-  }
+    },
+    [referrerRef],
+  );
 
-  private fetchRankImage = (title: string) => {
-    console.log('fetchRankImage ' + title);
-    this.state.rankImg.set(title, null);
-    this.sendMessageToOpener({action: 'getRankImage', payload: title});
-  };
+  const fetchRankImage = useCallback(
+    (title: string) => {
+      console.log('fetchRankImage ' + title);
+      // Intentionally avoid creating a new map to prevent unnecessary re-render.
+      rankImg.set(title, null);
+      sendMessageToOpener({action: 'getRankImage', payload: title});
+    },
+    [sendMessageToOpener, rankImg],
+  );
 
-  private handleWindowMessage = (evt: MessageEvent) => {
+  const handleWindowMessage = useCallback((evt: MessageEvent) => {
     if (isMaimaiNetOrigin(evt.origin)) {
-      this.referrer = evt.origin;
+      referrerRef.current = evt.origin;
       switch (evt.data.action) {
         case 'songImage':
-          this.setState({songImg: evt.data.imgSrc});
+          setSongImg(evt.data.imgSrc);
           break;
         case 'apFcImage':
-          this.setState({apFcImg: URL.createObjectURL(evt.data.img)});
+          setApFcImg(URL.createObjectURL(evt.data.img));
           break;
         case 'syncImage':
-          this.setState({syncImg: URL.createObjectURL(evt.data.img)});
+          setSyncImg(URL.createObjectURL(evt.data.img));
           break;
         case 'rankImage':
-          this.setState((state) => {
-            const existingUrl = state.rankImg.get(evt.data.title);
-            if (existingUrl) {
-              URL.revokeObjectURL(existingUrl);
-            }
-            const map = new Map(state.rankImg);
-            map.set(evt.data.title, URL.createObjectURL(evt.data.img));
-            return {rankImg: map};
-          });
+          const existingUrl = rankImg.get(evt.data.title);
+          if (existingUrl) {
+            URL.revokeObjectURL(existingUrl);
+          }
+          const map = new Map(rankImg);
+          map.set(evt.data.title, URL.createObjectURL(evt.data.img));
+          setRankImg(map);
           break;
         default:
           console.log(evt.data);
           break;
       }
     }
-  };
-}
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('message', handleWindowMessage);
+    sendMessageToOpener({action: 'ready'});
+    return () => {
+      window.removeEventListener('message', handleWindowMessage);
+    };
+  }, [handleWindowMessage, sendMessageToOpener]);
+
+  const {
+    achievement,
+    combo,
+    date,
+    place,
+    difficulty,
+    highScore,
+    noteJudgements,
+    songTitle,
+    track,
+    syncStatus,
+  } = playRecord;
+
+  return (
+    <>
+      <div className="widthLimit">
+        <div className="container">
+          <PageTitle />
+          <SectionSep />
+          {showError ? (
+            <div className="error">Failed to parse input. Please contact the developer!</div>
+          ) : (
+            <ScorePage
+              achievement={achievement}
+              combo={combo}
+              date={date}
+              place={place}
+              difficulty={difficulty}
+              highScore={highScore}
+              noteJudgements={noteJudgements}
+              songTitle={songTitle}
+              track={track}
+              syncStatus={syncStatus}
+              songImgSrc={songImg}
+              apFcImg={apFcImg}
+              rankImg={rankImg}
+              syncImg={syncImg}
+              fetchRankImage={fetchRankImage}
+            />
+          )}
+          <SectionSep />
+          <PageFooter />
+        </div>
+      </div>
+      <CreditInfo />
+    </>
+  );
+};
