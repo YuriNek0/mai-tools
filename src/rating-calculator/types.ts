@@ -14,11 +14,13 @@ export interface ChartAchievementTarget {
 }
 
 export interface ChartRecordWithRating extends ChartRecord {
+  /** Game version. -1 if unknown */
+  version: number;
   /**
    * Usually rankTitle is SSS, SS+, etc.
    * But if game version >= CiRCLE and player has AP, we'll display AP/AP+.
    */
-  rankTitle: string;
+  rankTitle: string | null;
   rating: number;
   nextRanks?: Map<string, ChartAchievementTarget>;
   order?: number;
@@ -27,7 +29,7 @@ export interface ChartRecordWithRating extends ChartRecord {
 
 export interface RatingData {
   date: Date;
-  playerName?: string;
+  playerName?: string | null;
   oldChartsRating: number;
   oldTopChartsCount: number;
   oldChartRecords: ChartRecordWithRating[];

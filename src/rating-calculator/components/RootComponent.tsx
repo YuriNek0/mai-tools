@@ -55,7 +55,7 @@ export class RootComponent extends React.PureComponent<{}, State> {
   private referrer = document.referrer && new URL(document.referrer).origin;
   private date = new Date();
   private playerScores: ChartRecord[] = [];
-  private songDatabase: SongDatabase;
+  private songDatabase: SongDatabase | undefined;
 
   // Current GameVersion (provided by the query parameter)
   private currentGameVer: GameVersion;
@@ -121,7 +121,7 @@ export class RootComponent extends React.PureComponent<{}, State> {
           </button>
         </div>
         {progress ? <p>{progress}</p> : null}
-        {ratingData && (
+        {ratingData && this.songDatabase && (
           <RatingOutput
             gameRegion={region}
             gameVer={gameVer}
@@ -176,7 +176,7 @@ export class RootComponent extends React.PureComponent<{}, State> {
       saveUserPreference(UserPreference.InternalLvOverride, lvInputTextarea.value);
       const overrides = parseInternalLvInput(lvInputTextarea.value);
       console.log(overrides);
-      overrides.forEach((override) => this.songDatabase.updateSong(override));
+      overrides.forEach((override) => this.songDatabase!.updateSong(override));
     }
     console.log('Song database:', this.songDatabase);
     console.log('Player scores:', this.playerScores);
@@ -325,7 +325,7 @@ function readPlayerScoresFromQueryParams(qp: URLSearchParams, songDb: SongDataba
       return;
     }
     const lv = props.lv[difficulty];
-    return {
+    const r: ChartRecord = {
       songName: props.name,
       genre: props.genre,
       difficulty,
@@ -334,6 +334,7 @@ function readPlayerScoresFromQueryParams(qp: URLSearchParams, songDb: SongDataba
       achievement,
       fcap: achievement >= 101 ? 'AP+' : isAp ? 'AP' : null,
     };
+    return r;
   });
   return failed ? [] : records;
 }

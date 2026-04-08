@@ -21,7 +21,9 @@ function getRecordWithRating(
   record: ChartRecord,
   songProps?: SongProperties,
 ): ChartRecordWithRating {
+  let version = -1;
   if (songProps) {
+    version = songProps.debut;
     const lv = songProps.lv[record.difficulty];
     if (typeof lv === 'number') {
       record.level = Math.abs(lv);
@@ -32,6 +34,7 @@ function getRecordWithRating(
     gameVer >= GameVersion.CiRCLE && record.fcap && record.fcap.includes('AP') ? 1 : 0;
   return {
     ...record,
+    version,
     rankTitle: bonusPoint ? record.fcap : getRankTitle(record.achievement),
     rating: baseRating + bonusPoint,
   };
@@ -56,7 +59,7 @@ export function isNewChart(
 export function analyzePlayerRating(
   songDb: SongDatabase,
   date: Date,
-  playerName: string,
+  playerName: string | undefined | null,
   playerScores: ReadonlyArray<ChartRecord>,
   gameRegion: GameRegion,
   gameVer: GameVersion,
@@ -76,7 +79,7 @@ export function analyzePlayerRating(
       continue;
     }
     const recordWithRating = getRecordWithRating(gameVer, record, songProps);
-    if (isNewChart(record, songProps, gameVer, includePreviousVerInNewCharts)) {
+    if (isNewChart(record, songProps!, gameVer, includePreviousVerInNewCharts)) {
       newChartRecords.push(recordWithRating);
     } else {
       oldChartRecords.push(recordWithRating);

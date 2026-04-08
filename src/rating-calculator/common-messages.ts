@@ -16,6 +16,7 @@ export const CommonMessages = {
     autofill: 'Autofill',
     example: 'example',
     includeAllPerfect: 'Include All Perfect',
+    version: 'Version',
   },
   [Language.zh_TW]: {
     all: '全部',
@@ -32,6 +33,7 @@ export const CommonMessages = {
     autofill: '自動帶入',
     example: '範例',
     includeAllPerfect: '包含 AP',
+    version: '版本',
   },
   [Language.ko_KR]: {
     all: '전부',
@@ -48,5 +50,6 @@ export const CommonMessages = {
     autofill: '자동입력',
     example: '예',
     includeAllPerfect: 'AP 포함',
+    version: '버전',
   },
 };

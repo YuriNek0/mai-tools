@@ -51,7 +51,7 @@ export const TopChartRecords = (props: Props) => {
   const {compactMode, limit, songDatabase} = props;
   // Force visible if compact mode is enabled
   const hidden = compactMode ? false : props.hidden;
-  const [sortBy, setSortBy] = useState(ColumnType.RATING);
+  const [sortBy, setSortBy] = useState<ColumnType>(ColumnType.RATING);
   const [reverse, setReverse] = useState(false);
 
   const handleSortBy = useCallback(

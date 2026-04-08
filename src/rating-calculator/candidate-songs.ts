@@ -159,6 +159,7 @@ export function getNotPlayedCharts(
       }
       const record: ChartRecordWithRating = {
         songName: s.name,
+        version: s.debut,
         difficulty: diff,
         level,
         genre: '',
