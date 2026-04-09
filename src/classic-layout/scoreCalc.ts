@@ -8,13 +8,13 @@ import {
   REGULAR_BASE_SCORE_MULTIPLIER,
 } from './constants';
 import {convertJudgementsToArray} from './judgementsHelper';
-import {BreakScoreMap, FullNoteType, NoteType, StrictJudgement} from './types';
+import {BreakScoreMap, FullNoteType, NoteType, ScoreInfo, StrictJudgement} from './types';
 
 function calculateBorder(
   totalBaseScore: number,
   breakCount: number,
   achievement: number | 'SSS+',
-  playerNoteScore: number
+  playerNoteScore: number,
 ): number {
   if (achievement === 'SSS+') {
     return totalBaseScore + breakCount * BREAK_BONUS_POINTS - playerNoteScore;
@@ -35,8 +35,8 @@ function calculateBorder(
  */
 export function calculateScoreInfo(
   judgementsPerType: Map<NoteType, Record<StrictJudgement, number>>,
-  playerAchievement: number
-) {
+  playerAchievement: number,
+): ScoreInfo {
   let totalBaseScore = 0;
   let playerRegularNoteScore = 0;
   const playerScorePerType: Map<FullNoteType, {score: number; isMax: boolean}> = new Map([
@@ -80,7 +80,7 @@ export function calculateScoreInfo(
     new Map(),
     convertJudgementsToArray(breakJudgements), // Make a copy of breakJudgements
     remainingAchievement,
-    basePercentagePerBreak
+    basePercentagePerBreak,
   );
   console.log('valid break distributions', validBreakDistributions);
   let breakDistribution = validBreakDistributions[Math.floor(validBreakDistributions.length / 2)];
@@ -152,7 +152,7 @@ export function calculateScoreInfo(
   const achvLossDetail = calculateAchvLoss(
     judgementsPerType,
     breakDistribution,
-    scorePerPercentage
+    scorePerPercentage,
   );
   console.log('achievement loss detail', achvLossDetail);
 

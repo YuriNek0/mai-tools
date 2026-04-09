@@ -13,7 +13,7 @@ interface LvRatingContainerProps {
   heightUnit: number;
   containerHeight: number;
   onZoomIn: (minLv: string, maxLv: string) => void;
-  highlightInterval: (min: number, max: number) => void;
+  onHighlightInterval: (min: number, max: number) => void;
 }
 
 export const LvRatingContainer = memo(
@@ -26,7 +26,7 @@ export const LvRatingContainer = memo(
     containerHeight,
     ranks,
     onZoomIn,
-    highlightInterval,
+    onHighlightInterval,
   }: LvRatingContainerProps) => {
     const handleLabelClick = useCallback(() => {
       onZoomIn(lvTitle, lvTitle);
@@ -53,7 +53,7 @@ export const LvRatingContainer = memo(
                   maxFactor={rank.maxFactor || rank.factor}
                   heightUnit={heightUnit}
                   title={rank.title}
-                  highlightInterval={highlightInterval}
+                  highlightInterval={onHighlightInterval}
                 />
               );
             })

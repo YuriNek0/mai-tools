@@ -6,3 +6,17 @@ export type ScorePerType = Map<FullNoteType, {score: number | string; isMax: boo
 
 export type Judgement = 'perfect' | 'great' | 'good' | 'miss';
 export type StrictJudgement = 'cp' | Judgement;
+
+export interface ScoreInfo {
+  finaleAchievement: number;
+  maxFinaleScore: number;
+  breakDistribution: BreakScoreMap;
+  finaleBorder: Map<string, number>;
+  pctPerNoteType: Map<string, number>;
+  playerScorePerType: ScorePerType;
+  dxAchvPerType: ScorePerType;
+  achvLossDetail: {
+    dx: Map<FullNoteType, Record<Judgement | 'total', number>>;
+    finale: Map<FullNoteType, Record<Judgement | 'total', number>>;
+  };
+}

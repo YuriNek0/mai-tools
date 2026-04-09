@@ -42,7 +42,7 @@ function getRecordWithRating(
 
 export function isNewChart(
   record: ChartRecord,
-  songProps: SongProperties,
+  songProps: SongProperties | undefined | null,
   gameVer: GameVersion,
   includePreviousVerInNewCharts: boolean,
 ): boolean {
@@ -79,7 +79,7 @@ export function analyzePlayerRating(
       continue;
     }
     const recordWithRating = getRecordWithRating(gameVer, record, songProps);
-    if (isNewChart(record, songProps!, gameVer, includePreviousVerInNewCharts)) {
+    if (isNewChart(record, songProps, gameVer, includePreviousVerInNewCharts)) {
       newChartRecords.push(recordWithRating);
     } else {
       oldChartRecords.push(recordWithRating);

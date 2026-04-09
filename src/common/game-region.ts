@@ -25,6 +25,5 @@ export function getGameRegionFromShortString(region: string | undefined | null):
   if (!region) {
     return GameRegion.Intl;
   }
-  region = region.toLowerCase();
-  return region === GameRegion.Jp ? GameRegion.Jp : GameRegion.Intl;
+  return region.toLowerCase() === GameRegion.Jp ? GameRegion.Jp : GameRegion.Intl;
 }

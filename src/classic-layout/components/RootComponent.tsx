@@ -9,7 +9,7 @@ import {NoteType, StrictJudgement} from '../types';
 import {CreditInfo} from './CreditInfo';
 import {PageFooter} from './PageFooter';
 import {PageTitle} from './PageTitle';
-import {ScorePageContainer} from './ScorePageContainer';
+import {ScorePage} from './ScorePage';
 import {SectionSep} from './SectionSeparator';
 
 const defaultPlayRecord = {
@@ -139,7 +139,7 @@ export class RootComponent extends React.PureComponent<{}, RootComponentState> {
             {showError ? (
               <div className="error">Failed to parse input. Please contact the developer!</div>
             ) : (
-              <ScorePageContainer
+              <ScorePage
                 achievement={achievement}
                 combo={combo}
                 date={date}

@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import {KeyboardEvent, memo, ReactNode, useCallback} from 'react';
 
 import {ColumnType} from '../types';
 
@@ -24,44 +24,57 @@ interface Props {
   isHeading?: boolean;
   onClickCell?: (index: number) => void;
 }
-export class ChartRecordRow extends React.PureComponent<Props> {
-  render() {
-    const {columns, isHeading, renderCell, onClickCell} = this.props;
-    let className = SCORE_RECORD_ROW_CLASSNAME;
-    if (this.props.className) {
-      className += ' ' + this.props.className;
+
+export const ChartRecordRow = memo(
+  ({className, columns, isHeading, renderCell, onClickCell}: Props) => {
+    const handleCellClick = useCallback(
+      (index: number) => {
+        onClickCell?.(index);
+      },
+      [onClickCell],
+    );
+
+    const handleCellKeyDown = useCallback(
+      (evt: KeyboardEvent, index: number) => {
+        if (evt.key === 'Enter') {
+          handleCellClick(index);
+        }
+      },
+      [handleCellClick],
+    );
+
+    let rowClassName = SCORE_RECORD_ROW_CLASSNAME;
+    if (className) {
+      rowClassName += ' ' + className;
     }
+
     return (
-      <tr className={className}>
+      <tr className={rowClassName}>
         {columns.map((v, index) => {
           const columnClassName = SCORE_RECORD_CELL_CLASSNAMES[v];
-          let className = SCORE_RECORD_CELL_BASE_CLASSNAME + ' ' + columnClassName;
+          const cellClassName = SCORE_RECORD_CELL_BASE_CLASSNAME + ' ' + columnClassName;
           const children = renderCell(v);
           const clickProps = onClickCell
             ? {
                 tabIndex: 0,
-                onClick: () => onClickCell(index),
-                onKeyDown: (evt: React.KeyboardEvent) => {
-                  if (evt.key === 'Enter') {
-                    onClickCell(index);
-                  }
-                },
+                onClick: () => handleCellClick(index),
+                onKeyDown: (evt: KeyboardEvent) => handleCellKeyDown(evt, index),
               }
             : {};
           if (isHeading) {
             return (
-              <th key={index} className={className} {...clickProps}>
+              <th key={index} className={cellClassName} {...clickProps}>
                 {children}
               </th>
             );
           }
           return (
-            <td key={index} className={className} {...clickProps}>
+            <td key={index} className={cellClassName} {...clickProps}>
               {children}
             </td>
           );
         })}
       </tr>
     );
-  }
-}
+  },
+);

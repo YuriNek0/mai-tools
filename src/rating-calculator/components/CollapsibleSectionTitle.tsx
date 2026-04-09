@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo, useCallback, useEffect, useState} from 'react';
 
 interface Props {
   isCandidateList?: boolean;
@@ -6,51 +6,52 @@ interface Props {
   title: string;
   onClick: (evt: React.SyntheticEvent<HTMLElement>) => void;
 }
-interface State {
-  symbolClassName: string;
-}
-export class CollapsibleSectionTitle extends React.PureComponent<Props, State> {
-  state: State = {symbolClassName: ''};
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.contentHidden && !this.props.contentHidden) {
-      this.setState({symbolClassName: 'cSecShow'});
-      window.setTimeout(() => {
-        this.setState({symbolClassName: ''});
-      }, 300);
-    }
-  }
-  render() {
-    const {isCandidateList, contentHidden, title} = this.props;
-    let {symbolClassName} = this.state;
+
+export const CollapsibleSectionTitle = memo(
+  ({isCandidateList, contentHidden, title, onClick}: Props) => {
+    const [symbolClassName, setSymbolClassName] = useState<string>('');
+
+    useEffect(() => {
+      if (!contentHidden) {
+        setSymbolClassName('cSecShow');
+        const timeout = window.setTimeout(() => {
+          setSymbolClassName('');
+        }, 300);
+        return () => clearTimeout(timeout);
+      }
+    }, [contentHidden]);
+
+    const handleClick = useCallback(
+      (evt: React.SyntheticEvent<HTMLElement>) => {
+        evt.preventDefault();
+        onClick(evt);
+      },
+      [onClick],
+    );
+
+    const handleKeyPress = useCallback(
+      (evt: React.KeyboardEvent<HTMLElement>) => {
+        if (evt.key === 'Enter' || evt.key === ' ') {
+          evt.preventDefault();
+          onClick(evt);
+        }
+      },
+      [onClick],
+    );
+
     const symbol = isCandidateList ? '▷' : '▶';
-    symbolClassName += ' cSecTitleSymbol';
+    let finalSymbolClassName = symbolClassName + ' cSecTitleSymbol';
     if (contentHidden) {
-      symbolClassName += ' cSecHidden';
+      finalSymbolClassName += ' cSecHidden';
     }
+
     return (
       <h3 className="cSecTitleContainer">
-        <span
-          className="cSecTitle"
-          tabIndex={0}
-          onClick={this.handleClick}
-          onKeyDown={this.handleKeyPress}
-        >
-          <span className={symbolClassName}>{symbol}</span>
+        <span className="cSecTitle" tabIndex={0} onClick={handleClick} onKeyDown={handleKeyPress}>
+          <span className={finalSymbolClassName}>{symbol}</span>
           {title}
         </span>
       </h3>
     );
-  }
-
-  private handleClick = (evt: React.SyntheticEvent<HTMLElement>) => {
-    evt.preventDefault();
-    this.props.onClick(evt);
-  };
-
-  private handleKeyPress = (evt: React.KeyboardEvent<HTMLElement>) => {
-    if (evt.key === 'Enter' || evt.key === ' ') {
-      evt.preventDefault();
-      this.props.onClick(evt);
-    }
-  };
-}
+  },
+);

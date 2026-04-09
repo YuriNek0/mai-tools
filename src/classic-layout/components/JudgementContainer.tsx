@@ -1,4 +1,4 @@
-import React from 'react';
+import {memo} from 'react';
 
 import {BreakScoreMap, FullNoteType, Judgement, ScorePerType} from '../types';
 import {BreakNoteJudgement} from './BreakNoteJudgement';
@@ -16,18 +16,17 @@ interface JudgementContainerProps {
   showDetail: boolean;
 }
 
-export class JudgementContainer extends React.PureComponent<JudgementContainerProps> {
-  render() {
-    const {
-      breakDistribution,
-      combo,
-      isDxMode,
-      nextRank,
-      judgementDisplayMap,
-      noteLoss,
-      scorePerType,
-      showDetail,
-    } = this.props;
+export const JudgementContainer = memo(
+  ({
+    breakDistribution,
+    combo,
+    isDxMode,
+    nextRank,
+    judgementDisplayMap,
+    noteLoss,
+    scorePerType,
+    showDetail,
+  }: JudgementContainerProps) => {
     return (
       <div className="judgementContainer">
         <table className="judgement">
@@ -106,5 +105,5 @@ export class JudgementContainer extends React.PureComponent<JudgementContainerPr
         </table>
       </div>
     );
-  }
-}
+  },
+);

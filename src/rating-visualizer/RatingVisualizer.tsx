@@ -1,4 +1,4 @@
-import React from 'react';
+import {memo, useCallback, useRef, useState} from 'react';
 
 import {LevelDef} from '../common/level-helper';
 import {RankDef} from '../common/rank-functions';
@@ -17,19 +17,46 @@ interface Props {
   axisLabelStep: number;
 }
 
-interface State {
-  highlightInterval?: [number, number];
-}
+export const RatingVisualizer = memo(
+  ({
+    axisLabelStep,
+    canZoomIn,
+    onSetRange,
+    heightUnit,
+    levels,
+    maxRating,
+    ranks,
+    topPadding,
+  }: Props) => {
+    const [highlightInterval, setHighlightInterval] = useState<[number, number] | undefined>();
+    const removeIntervalTimeoutRef = useRef<number>(0);
 
-export class RatingVisualizer extends React.PureComponent<Props, State> {
-  private removeIntervalTimeout = 0;
+    const removeHighlightInterval = useCallback(() => {
+      removeIntervalTimeoutRef.current = window.setTimeout(() => {
+        setHighlightInterval(undefined);
+        removeIntervalTimeoutRef.current = 0;
+      }, 0);
+    }, []);
 
-  state: State = {};
+    const cancelRemoveHighlightInterval = useCallback(() => {
+      if (removeIntervalTimeoutRef.current) {
+        clearTimeout(removeIntervalTimeoutRef.current);
+        removeIntervalTimeoutRef.current = 0;
+      }
+    }, []);
 
-  render() {
-    const {axisLabelStep, canZoomIn, onSetRange, heightUnit, levels, maxRating, ranks} = this.props;
-    const {highlightInterval} = this.state;
-    const containerHeight = this.getContainerHeight();
+    const handleHighlightInterval = useCallback(
+      (minRt: number, maxRt: number) => {
+        if (highlightInterval && highlightInterval[0] === minRt && highlightInterval[1] === maxRt) {
+          removeHighlightInterval();
+        } else {
+          setHighlightInterval([minRt, maxRt]);
+        }
+      },
+      [highlightInterval, setHighlightInterval, removeHighlightInterval],
+    );
+
+    const containerHeight = (maxRating + axisLabelStep) * heightUnit + topPadding;
 
     if (!heightUnit) {
       return null;
@@ -38,8 +65,8 @@ export class RatingVisualizer extends React.PureComponent<Props, State> {
     return (
       <div
         className="container"
-        onBlur={this.removeHighlightInterval}
-        onFocus={this.cancelRemoveHighlightInterval}
+        onBlur={removeHighlightInterval}
+        onFocus={cancelRemoveHighlightInterval}
         tabIndex={-1}
       >
         <div className="ratingContainer">
@@ -48,7 +75,7 @@ export class RatingVisualizer extends React.PureComponent<Props, State> {
             heightUnit={heightUnit}
             containerHeight={containerHeight}
             step={axisLabelStep}
-            onClick={this.removeHighlightInterval}
+            onClick={removeHighlightInterval}
           />
           {levels.map((lv, i) => {
             return (
@@ -62,7 +89,7 @@ export class RatingVisualizer extends React.PureComponent<Props, State> {
                 containerHeight={containerHeight}
                 ranks={ranks}
                 onZoomIn={onSetRange}
-                highlightInterval={this.highlightInterval}
+                onHighlightInterval={handleHighlightInterval}
               />
             );
           })}
@@ -70,39 +97,11 @@ export class RatingVisualizer extends React.PureComponent<Props, State> {
             <IntervalLines
               interval={highlightInterval}
               heightUnit={heightUnit}
-              onClick={this.removeHighlightInterval}
+              onClick={removeHighlightInterval}
             />
           )}
         </div>
       </div>
     );
-  }
-
-  private getContainerHeight(): number {
-    const {axisLabelStep, maxRating, heightUnit, topPadding} = this.props;
-    return (maxRating + axisLabelStep) * heightUnit + topPadding;
-  }
-
-  private highlightInterval = (minRt: number, maxRt: number) => {
-    const curItvl = this.state.highlightInterval;
-    if (curItvl && curItvl[0] === minRt && curItvl[1] === maxRt) {
-      this.removeHighlightInterval();
-    } else {
-      this.setState({highlightInterval: [minRt, maxRt]});
-    }
-  };
-
-  private removeHighlightInterval = () => {
-    this.removeIntervalTimeout = window.setTimeout(() => {
-      this.setState({highlightInterval: undefined});
-      this.removeIntervalTimeout = 0;
-    }, 0);
-  };
-
-  private cancelRemoveHighlightInterval = () => {
-    if (this.removeIntervalTimeout) {
-      clearTimeout(this.removeIntervalTimeout);
-      this.removeIntervalTimeout = 0;
-    }
-  };
-}
+  },
+);

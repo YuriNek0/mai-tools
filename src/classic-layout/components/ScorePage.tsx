@@ -1,10 +1,19 @@
-import {useCallback, useState} from 'react';
+import {memo, useCallback, useMemo, useState} from 'react';
 
 import {GameVersion, validateGameVersion} from '../../common/game-version';
 import {formatFloat} from '../../common/number-helper';
 import {QueryParam} from '../../common/query-params';
 import {getRankDefinitions, getRankIndexByAchievement} from '../../common/rank-functions';
-import {BreakScoreMap, FullNoteType, Judgement, ScorePerType} from '../types';
+import {calculateJudgementDisplayMap} from '../judgementsHelper';
+import {calculateScoreInfo} from '../scoreCalc';
+import {
+  FullNoteType,
+  Judgement,
+  NoteType,
+  ScoreInfo,
+  ScorePerType,
+  StrictJudgement,
+} from '../types';
 import {AchievementInfo} from './AchievementInfo';
 import {DateAndPlace} from './DateAndPlace';
 import {JudgementContainer} from './JudgementContainer';
@@ -21,34 +30,22 @@ interface ScorePageProps {
   songTitle: string;
   songImgSrc?: string;
   achievement: number;
-  apFcImg?: string;
-  combo?: string;
+  noteJudgements: Map<NoteType, Record<StrictJudgement, number>>;
+  difficulty?: string;
+  track: string;
   date: string;
   place: string;
-  difficulty?: string;
-  finaleAchievement: number;
-  finaleBorder: Map<string, number>;
   highScore?: boolean;
-  judgementDisplayMap: Map<FullNoteType, Record<Judgement, number>>;
-  rankImg: Map<string, string>;
-  syncImg?: string;
+  combo?: string;
   syncStatus?: string;
-  track: string;
-  maxFinaleScore: number;
-  breakDistribution: BreakScoreMap;
-  pctPerNoteType: Map<string, number>;
-  playerScorePerType: ScorePerType;
-  dxAchvPerType: ScorePerType;
-  apFcStatus: string | null;
-  achvLossDetail: {
-    dx: Map<FullNoteType, Record<Judgement | 'total', number>>;
-    finale: Map<FullNoteType, Record<Judgement | 'total', number>>;
-  };
+  rankImg: Map<string, string>;
+  apFcImg?: string;
+  syncImg?: string;
   fetchRankImage: (title: string) => void;
 }
 
-export const ScorePage = (props: ScorePageProps) => {
-  const {
+export const ScorePage = memo(
+  ({
     achievement,
     apFcImg,
     rankImg,
@@ -60,75 +57,103 @@ export const ScorePage = (props: ScorePageProps) => {
     track,
     difficulty,
     songImgSrc,
-    judgementDisplayMap,
+    noteJudgements,
     combo,
     syncStatus,
-    apFcStatus,
-    finaleAchievement,
-    maxFinaleScore,
-    breakDistribution,
-  } = props;
-  const gameVerStr = new URLSearchParams(window.location.search).get(QueryParam.GameVersion);
-  const gameVer = validateGameVersion(gameVerStr, 0);
-  const [isDxMode, setIsDxMode] = useState(gameVer >= GameVersion.DX);
-  const [showDetail, setShowDetail] = useState(true);
-  const noteLoss = getNoteLoss(isDxMode, props.achvLossDetail);
+    fetchRankImage,
+  }: ScorePageProps) => {
+    const gameVerStr = new URLSearchParams(window.location.search).get(QueryParam.GameVersion);
+    const gameVer = validateGameVersion(gameVerStr, 0);
+    const [isDxMode, setIsDxMode] = useState(gameVer >= GameVersion.DX);
+    const [showDetail, setShowDetail] = useState(true);
 
-  const toggleDxMode = useCallback(() => {
-    setIsDxMode(!isDxMode);
-  }, [isDxMode, setIsDxMode]);
+    const scoreInfo = useMemo(() => {
+      return calculateScoreInfo(noteJudgements, achievement);
+    }, [noteJudgements, achievement]);
+    const {achvLossDetail, finaleBorder, finaleAchievement, maxFinaleScore, breakDistribution} =
+      scoreInfo;
+    const noteLoss = getNoteLoss(isDxMode, achvLossDetail);
 
-  const toggleDisplayMode = useCallback(() => {
-    setShowDetail(!showDetail);
-  }, [showDetail, setShowDetail]);
+    const judgementDisplayMap = useMemo(() => {
+      return calculateJudgementDisplayMap(noteJudgements);
+    }, [noteJudgements]);
+    const apFcStatus = useMemo(() => {
+      return calculateApFcStatus(judgementDisplayMap.get('total'), finaleBorder);
+    }, [judgementDisplayMap, finaleBorder]);
 
-  return (
-    <div className="songScoreContainer">
-      <DateAndPlace
-        actualPlace={place}
-        date={date}
-        isDxMode={isDxMode}
-        toggleDxMode={toggleDxMode}
-      />
-      <div className="songScoreBody">
-        <hr className="trackTopLine" />
-        <SongInfo songTitle={songTitle} track={track} difficulty={difficulty} />
-        <SongImg imgSrc={songImgSrc} />
-        <AchievementInfo
-          apFcStatus={apFcStatus}
-          apFcImg={apFcImg}
-          rankImgMap={rankImg}
-          syncStatus={syncStatus}
-          syncImg={syncImg}
+    const toggleDxMode = useCallback(() => {
+      setIsDxMode(!isDxMode);
+    }, [isDxMode, setIsDxMode]);
+
+    const toggleDisplayMode = useCallback(() => {
+      setShowDetail(!showDetail);
+    }, [showDetail, setShowDetail]);
+
+    return (
+      <div className="songScoreContainer">
+        <DateAndPlace
+          actualPlace={place}
+          date={date}
           isDxMode={isDxMode}
-          isHighScore={highScore}
-          dxAchv={achievement}
-          finaleAchv={finaleAchievement}
-          maxFinaleAchv={maxFinaleScore}
-          showMaxAchv={showDetail}
-          toggleDisplayMode={toggleDisplayMode}
-          fetchRankImage={props.fetchRankImage}
+          toggleDxMode={toggleDxMode}
         />
-        <JudgementContainer
-          judgementDisplayMap={judgementDisplayMap}
-          noteLoss={noteLoss}
-          breakDistribution={breakDistribution}
-          scorePerType={getDisplayScorePerType(isDxMode, showDetail, props)}
-          nextRank={getNextRankEntry(isDxMode, props)}
-          combo={combo}
-          isDxMode={isDxMode}
-          showDetail={showDetail}
-        />
+        <div className="songScoreBody">
+          <hr className="trackTopLine" />
+          <SongInfo songTitle={songTitle} track={track} difficulty={difficulty} />
+          <SongImg imgSrc={songImgSrc} />
+          <AchievementInfo
+            apFcStatus={apFcStatus}
+            apFcImg={apFcImg}
+            rankImgMap={rankImg}
+            syncStatus={syncStatus}
+            syncImg={syncImg}
+            isDxMode={isDxMode}
+            isHighScore={highScore}
+            dxAchv={achievement}
+            finaleAchv={finaleAchievement}
+            maxFinaleAchv={maxFinaleScore}
+            showMaxAchv={showDetail}
+            toggleDisplayMode={toggleDisplayMode}
+            fetchRankImage={fetchRankImage}
+          />
+          <JudgementContainer
+            judgementDisplayMap={judgementDisplayMap}
+            noteLoss={noteLoss}
+            breakDistribution={breakDistribution}
+            scorePerType={getDisplayScorePerType(isDxMode, showDetail, scoreInfo)}
+            nextRank={getNextRankEntry(isDxMode, achievement, scoreInfo)}
+            combo={combo}
+            isDxMode={isDxMode}
+            showDetail={showDetail}
+          />
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  },
+);
+
+function calculateApFcStatus(
+  totalJudgements: Record<Judgement, number>,
+  finaleBorder: Map<string, number>,
+) {
+  if (totalJudgements.miss) {
+    return null;
+  } else if (finaleBorder.get('AP+') === 0) {
+    return 'AP+';
+  } else if (totalJudgements.good) {
+    return 'FC';
+  } else if (totalJudgements.great) {
+    return 'FC+';
+  }
+  return 'AP';
+}
 
 function getNextRankEntry(
   isDxMode: boolean,
-  props: Pick<ScorePageProps, 'achievement' | 'finaleAchievement' | 'finaleBorder'>,
+  achievement: number,
+  props: Pick<ScoreInfo, 'finaleAchievement' | 'finaleBorder'>,
 ) {
-  const achv = isDxMode ? props.achievement : props.finaleAchievement;
+  const achv = isDxMode ? achievement : props.finaleAchievement;
   if (isDxMode) {
     if (achv === 101) {
       return undefined;
@@ -153,7 +178,7 @@ function getNextRankEntry(
   return nextRank;
 }
 
-function getNoteLoss(isDxMode: boolean, achvLossDetail: ScorePageProps['achvLossDetail']) {
+function getNoteLoss(isDxMode: boolean, achvLossDetail: ScoreInfo['achvLossDetail']) {
   const lossDetail = isDxMode ? achvLossDetail.dx : achvLossDetail.finale;
   const digits = isDxMode ? 2 : 0;
   const map = new Map<FullNoteType, Record<Judgement, string>>();
@@ -171,7 +196,7 @@ function getNoteLoss(isDxMode: boolean, achvLossDetail: ScorePageProps['achvLoss
 function getDisplayScorePerType(
   isDxMode: boolean,
   showDetail: boolean,
-  props: Pick<ScorePageProps, 'achvLossDetail' | 'dxAchvPerType' | 'playerScorePerType'>,
+  props: Pick<ScoreInfo, 'achvLossDetail' | 'dxAchvPerType' | 'playerScorePerType'>,
 ): ScorePerType {
   const lossDetail = isDxMode ? props.achvLossDetail.dx : props.achvLossDetail.finale;
   if (showDetail) {
