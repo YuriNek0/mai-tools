@@ -94,6 +94,7 @@ export const AchievementInfo = memo(
     );
     const achvText = isDxMode ? dxAchv.toFixed(4) : finaleAchv.toFixed(2);
     const maxAchvText = isDxMode ? MAX_DX_ACHIEVEMENT.toFixed(4) : maxFinaleAchv.toFixed(2);
+    const highScoreText = !isHighScore ? '' : isDxMode ? 'NEW RECORD' : 'HIGH SCORE!!';
 
     return (
       <div className="achievementInfo">
@@ -102,7 +103,7 @@ export const AchievementInfo = memo(
         <div className={getApFcClassName(apFcStatus)}>{apFcElem}</div>
         <div className={getSyncClassName(isDxMode)}>{syncElem}</div>
         <div className="playerScore">
-          <div className="highScore">{isHighScore ? 'HIGH SCORE!!' : ' '}</div>
+          <div className="highScore">{highScoreText}</div>
           <button className="achievement" onClick={toggleDisplayMode}>
             達成率：
             <span className={'achvNum' + (showMaxAchv ? ' hasMaxAchv' : '')}>
