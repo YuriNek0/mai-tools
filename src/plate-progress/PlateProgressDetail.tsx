@@ -23,7 +23,7 @@ export function PlateProgressDetail(props: Props) {
       setPlateType(plate);
       setSelectedDifficulty(d);
     },
-    [plateType, selectedDifficulty],
+    [],
   );
   const allSongs = {
     dx: new Set(versionInfo.dx_songs),

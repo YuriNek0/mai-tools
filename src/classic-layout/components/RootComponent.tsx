@@ -122,17 +122,16 @@ export const RootComponent = () => {
         }
       }
     },
-    [referrerRef],
+    [],
   );
 
   const fetchRankImage = useCallback(
     (title: string) => {
       console.log('fetchRankImage ' + title);
-      // Intentionally avoid creating a new map to prevent unnecessary re-render.
-      rankImg.set(title, null);
+      setRankImg(prev => new Map(prev).set(title, null));
       sendMessageToOpener({action: 'getRankImage', payload: title});
     },
-    [sendMessageToOpener, rankImg],
+    [sendMessageToOpener],
   );
 
   const handleWindowMessage = useCallback((evt: MessageEvent) => {
@@ -149,13 +148,15 @@ export const RootComponent = () => {
           setSyncImg(URL.createObjectURL(evt.data.img));
           break;
         case 'rankImage':
-          const existingUrl = rankImg.get(evt.data.title);
-          if (existingUrl) {
-            URL.revokeObjectURL(existingUrl);
-          }
-          const map = new Map(rankImg);
-          map.set(evt.data.title, URL.createObjectURL(evt.data.img));
-          setRankImg(map);
+          setRankImg(prev => {
+            const existingUrl = prev.get(evt.data.title);
+            if (existingUrl) {
+              URL.revokeObjectURL(existingUrl);
+            }
+            const map = new Map(prev);
+            map.set(evt.data.title, URL.createObjectURL(evt.data.img));
+            return map;
+          });
           break;
         default:
           console.log(evt.data);

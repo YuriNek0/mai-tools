@@ -12,21 +12,21 @@ interface Props {
   onClick?: (plate: PlateType, d: Difficulty) => void;
 }
 export function PlateProgressTableCell(props: Props) {
-  const {onClick, plateType} = props;
+  const {onClick, plateType, d} = props;
   const handleClick = useCallback(() => {
     if (plateType) {
-      onClick(plateType, props.d);
+      onClick(plateType, d);
     }
-  }, []);
+  }, [onClick, plateType, d]);
   const handleKeyDown = useCallback((evt: KeyboardEvent) => {
     if (evt.ctrlKey || evt.altKey || evt.metaKey || evt.shiftKey) {
       return;
     }
-    if (evt.key === 'Enter' || evt.key == ' ') {
+    if (evt.key === 'Enter' || evt.key === ' ') {
       evt.preventDefault();
       handleClick();
     }
-  }, []);
+  }, [handleClick]);
   const clickableProps =
     plateType && onClick
       ? {

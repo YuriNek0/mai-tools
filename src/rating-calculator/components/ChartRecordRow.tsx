@@ -1,48 +1,20 @@
-import {KeyboardEvent, memo, ReactNode, useCallback} from 'react';
+import {memo, ReactNode} from 'react';
 
 import {ColumnType} from '../types';
+import {ChartRecordCell} from './ChartRecordCell';
 
 const SCORE_RECORD_ROW_CLASSNAME = 'scoreRecordRow';
-const SCORE_RECORD_CELL_BASE_CLASSNAME = 'scoreRecordCell';
-const ACHV_CELL_CLASSNAME = 'achievementCell';
-const SCORE_RECORD_CELL_CLASSNAMES: Record<ColumnType, string> = {
-  [ColumnType.NO]: 'orderCell',
-  [ColumnType.SONG_TITLE]: 'songTitleCell',
-  [ColumnType.CHART_TYPE]: 'chartTypeCell',
-  [ColumnType.LEVEL]: 'levelCell',
-  [ColumnType.ACHIEVEMENT]: ACHV_CELL_CLASSNAME,
-  [ColumnType.RANK]: 'rankCell',
-  [ColumnType.NEXT_RANK]: 'rankCell',
-  [ColumnType.RATING]: 'ratingCell',
-  [ColumnType.NEXT_RATING]: 'nextRatingCell',
-};
 
 interface Props {
   className?: string;
   columns: ReadonlyArray<ColumnType>;
   renderCell: (col: ColumnType) => ReactNode;
   isHeading?: boolean;
-  onClickCell?: (index: number) => void;
+  onClickCell?: (col: ColumnType) => void;
 }
 
 export const ChartRecordRow = memo(
   ({className, columns, isHeading, renderCell, onClickCell}: Props) => {
-    const handleCellClick = useCallback(
-      (index: number) => {
-        onClickCell?.(index);
-      },
-      [onClickCell],
-    );
-
-    const handleCellKeyDown = useCallback(
-      (evt: KeyboardEvent, index: number) => {
-        if (evt.key === 'Enter') {
-          handleCellClick(index);
-        }
-      },
-      [handleCellClick],
-    );
-
     let rowClassName = SCORE_RECORD_ROW_CLASSNAME;
     if (className) {
       rowClassName += ' ' + className;
@@ -50,30 +22,11 @@ export const ChartRecordRow = memo(
 
     return (
       <tr className={rowClassName}>
-        {columns.map((v, index) => {
-          const columnClassName = SCORE_RECORD_CELL_CLASSNAMES[v];
-          const cellClassName = SCORE_RECORD_CELL_BASE_CLASSNAME + ' ' + columnClassName;
-          const children = renderCell(v);
-          const clickProps = onClickCell
-            ? {
-                tabIndex: 0,
-                onClick: () => handleCellClick(index),
-                onKeyDown: (evt: KeyboardEvent) => handleCellKeyDown(evt, index),
-              }
-            : {};
-          if (isHeading) {
-            return (
-              <th key={index} className={cellClassName} {...clickProps}>
-                {children}
-              </th>
-            );
-          }
-          return (
-            <td key={index} className={cellClassName} {...clickProps}>
-              {children}
-            </td>
-          );
-        })}
+        {columns.map((col, index) => (
+          <ChartRecordCell key={index} column={col} isHeading={isHeading} onClickCell={onClickCell}>
+            {renderCell(col)}
+          </ChartRecordCell>
+        ))}
       </tr>
     );
   },

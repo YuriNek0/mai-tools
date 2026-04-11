@@ -46,7 +46,7 @@ interface Props {
 
 export const ChartRecordHeadRow = memo(({columns, sortBy}: Props) => {
   const lang = useLanguage();
-  const handleClick = sortBy && ((index: number) => sortBy(columns[index]));
+  const handleClick = sortBy && ((col: ColumnType) => sortBy(col));
   const renderCell = useCallback((col: ColumnType) => getColumnTitle(lang, col), [lang]);
 
   return (

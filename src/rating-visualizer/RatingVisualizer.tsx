@@ -53,7 +53,7 @@ export const RatingVisualizer = memo(
           setHighlightInterval([minRt, maxRt]);
         }
       },
-      [highlightInterval, setHighlightInterval, removeHighlightInterval],
+      [highlightInterval, removeHighlightInterval],
     );
 
     const containerHeight = (maxRating + axisLabelStep) * heightUnit + topPadding;

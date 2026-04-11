@@ -65,7 +65,7 @@ export const RootComponent = () => {
         }
       }
     },
-    [referrerRef, setProgress, setPlayerScores, setRegion],
+    [setProgress, setPlayerScores, setRegion],
   );
 
   useEffect(() => {
