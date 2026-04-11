@@ -46,6 +46,9 @@ export function getMaxConstant(gameVer: GameVersion, officialLevel: string): num
     return MIN_LEVEL;
   }
   const baseLevel = parseInt(officialLevel);
+  if (baseLevel >= MAX_LEVEL) {
+    return MAX_LEVEL;
+  }
   return officialLevel.endsWith('+') ? baseLevel + 0.9 : baseLevel + getMaxMinorBeforePlus(gameVer);
 }
 
