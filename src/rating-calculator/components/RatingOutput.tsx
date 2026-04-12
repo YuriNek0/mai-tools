@@ -111,18 +111,18 @@ export const RatingOutput = ({
   return (
     <div id="ratingOutput">
       <hr className="sectionSep" />
-      <div>
-        <label>
-          <input type="checkbox" checked={compactMode} onChange={toggleCompactMode} />{' '}
-          {messages.compactMode}
-        </label>
-      </div>
       <ShareRating
         gameRegion={gameRegion}
         gameVer={gameVer}
         ratingData={ratingData}
         songDb={songDatabase}
       />
+      <div>
+        <label>
+          <input type="checkbox" checked={compactMode} onChange={toggleCompactMode} />{' '}
+          {messages.compactMode}
+        </label>
+      </div>
       {compactMode ? (
         <>
           <div className="compactRatingRow">

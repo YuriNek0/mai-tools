@@ -46,6 +46,8 @@ const MessagesByLang = {
 
 export const RootComponent = () => {
   const referrerRef = useRef(document.referrer && new URL(document.referrer).origin);
+  const readySentRef = useRef(false);
+
   const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const gameVerParam = queryParams.get(QueryParam.GameVersion);
   const latestGameVer = validateGameVersion(
@@ -154,15 +156,23 @@ export const RootComponent = () => {
 
   useEffect(() => {
     window.addEventListener('message', handleWindowMessage);
+    return () => {
+      window.removeEventListener('message', handleWindowMessage);
+    };
+  }, [handleWindowMessage]);
+
+  useEffect(() => {
+    // Avoid sending 'getFriendRecords' or 'ready' multiple times. It is expensive.
+    if (readySentRef.current) {
+      return;
+    }
     if (friendIdx) {
       postMessageToOpener({action: 'getFriendRecords', payload: friendIdx});
     } else {
       postMessageToOpener({action: 'ready', payload: lang});
     }
-    return () => {
-      window.removeEventListener('message', handleWindowMessage);
-    };
-  }, [friendIdx, lang, handleWindowMessage, postMessageToOpener]);
+    readySentRef.current = true;
+  }, [friendIdx, lang, postMessageToOpener]);
 
   useEffect(() => {
     if (ratingData) {
@@ -170,25 +180,25 @@ export const RootComponent = () => {
     }
   }, [ratingData]);
 
-  const changeLanguage = useCallback((newLang: Language) => {
-    setLang(newLang);
-    saveLanguage(newLang);
-    postMessageToOpener({action: 'saveLanguage', payload: newLang});
-  }, [postMessageToOpener]);
-
-  const handleClickAnalyzeRating = useCallback(
-    (evt: SyntheticEvent) => {
-      evt.preventDefault();
-      const lvInputTextarea = document.querySelector('#lvInput');
-      if (lvInputTextarea instanceof HTMLTextAreaElement) {
-        saveUserPreference(UserPreference.InternalLvOverride, lvInputTextarea.value);
-        const overrides = parseInternalLvInput(lvInputTextarea.value);
-        console.log(overrides);
-        setLvOverrides(overrides);
-      }
+  const changeLanguage = useCallback(
+    (newLang: Language) => {
+      setLang(newLang);
+      saveLanguage(newLang);
+      postMessageToOpener({action: 'saveLanguage', payload: newLang});
     },
-    [],
+    [postMessageToOpener],
   );
+
+  const handleClickAnalyzeRating = useCallback((evt: SyntheticEvent) => {
+    evt.preventDefault();
+    const lvInputTextarea = document.querySelector('#lvInput');
+    if (lvInputTextarea instanceof HTMLTextAreaElement) {
+      saveUserPreference(UserPreference.InternalLvOverride, lvInputTextarea.value);
+      const overrides = parseInternalLvInput(lvInputTextarea.value);
+      console.log(overrides);
+      setLvOverrides(overrides);
+    }
+  }, []);
 
   const messages = MessagesByLang[lang];
   return (
