@@ -31,6 +31,7 @@ export const ChartRecordCell = ({column, isHeading, onClickCell, children}: Prop
   const handleCellKeyDown = useCallback(
     (evt: KeyboardEvent) => {
       if (evt.key === 'Enter' || evt.key === ' ') {
+        evt.preventDefault();
         onClickCell?.(column);
       }
     },
