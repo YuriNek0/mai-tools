@@ -154,15 +154,18 @@ export const RootComponent = () => {
 
   useEffect(() => {
     window.addEventListener('message', handleWindowMessage);
-    if (friendIdx) {
-      postMessageToOpener({action: 'getFriendRecords', payload: friendIdx});
-    } else {
-      postMessageToOpener({action: 'ready', payload: lang});
-    }
     return () => {
       window.removeEventListener('message', handleWindowMessage);
     };
-  }, [friendIdx, lang, handleWindowMessage, postMessageToOpener]);
+  }, [handleWindowMessage]);
+
+  useEffect(() => {
+    if (friendIdx) {
+      postMessageToOpener({action: 'getFriendRecords', payload: friendIdx});
+    } else if (playerScores.length === 0) {
+      postMessageToOpener({action: 'ready', payload: lang});
+    }
+  }, [friendIdx, playerScores, lang]);
 
   useEffect(() => {
     if (ratingData) {
@@ -170,25 +173,25 @@ export const RootComponent = () => {
     }
   }, [ratingData]);
 
-  const changeLanguage = useCallback((newLang: Language) => {
-    setLang(newLang);
-    saveLanguage(newLang);
-    postMessageToOpener({action: 'saveLanguage', payload: newLang});
-  }, [postMessageToOpener]);
-
-  const handleClickAnalyzeRating = useCallback(
-    (evt: SyntheticEvent) => {
-      evt.preventDefault();
-      const lvInputTextarea = document.querySelector('#lvInput');
-      if (lvInputTextarea instanceof HTMLTextAreaElement) {
-        saveUserPreference(UserPreference.InternalLvOverride, lvInputTextarea.value);
-        const overrides = parseInternalLvInput(lvInputTextarea.value);
-        console.log(overrides);
-        setLvOverrides(overrides);
-      }
+  const changeLanguage = useCallback(
+    (newLang: Language) => {
+      setLang(newLang);
+      saveLanguage(newLang);
+      postMessageToOpener({action: 'saveLanguage', payload: newLang});
     },
-    [],
+    [postMessageToOpener],
   );
+
+  const handleClickAnalyzeRating = useCallback((evt: SyntheticEvent) => {
+    evt.preventDefault();
+    const lvInputTextarea = document.querySelector('#lvInput');
+    if (lvInputTextarea instanceof HTMLTextAreaElement) {
+      saveUserPreference(UserPreference.InternalLvOverride, lvInputTextarea.value);
+      const overrides = parseInternalLvInput(lvInputTextarea.value);
+      console.log(overrides);
+      setLvOverrides(overrides);
+    }
+  }, []);
 
   const messages = MessagesByLang[lang];
   return (
