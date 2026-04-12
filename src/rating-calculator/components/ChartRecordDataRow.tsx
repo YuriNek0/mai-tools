@@ -48,7 +48,10 @@ const RECORD_RENDERER: Record<
         <div className="textAlignCenter">{Math.floor(record.rating)}</div>
       </>
     ) : (
-      record.achievement.toFixed(4) + '%'
+      <>
+        <div className="textAlignCenter">{record.rankTitle}</div>
+        <div className="textAlignRight">{record.achievement.toFixed(4) + '%'}</div>
+      </>
     ),
   [ColumnType.RANK]: (record) => record.rankTitle,
   [ColumnType.NEXT_RANK]: (record) =>

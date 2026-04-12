@@ -27,7 +27,6 @@ const COLUMNS: ReadonlyArray<ColumnType> = [
   ColumnType.CHART_TYPE,
   ColumnType.LEVEL,
   ColumnType.ACHIEVEMENT,
-  ColumnType.RANK,
   ColumnType.RATING,
 ];
 

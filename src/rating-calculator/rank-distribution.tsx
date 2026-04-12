@@ -14,7 +14,8 @@ export function getRankDistribution(
     countPerRank.set(r.title, 0);
   }
   scoreList.forEach((record) => {
-    const rankTitle = record.fcap?.includes('AP') ? 'AP' : getRankTitle(record.achievement);
+    const rankTitle =
+      includeAllPerfect && record.fcap?.includes('AP') ? 'AP' : getRankTitle(record.achievement);
     const rankCount = countPerRank.get(rankTitle);
     countPerRank.set(rankTitle, rankCount + 1);
   });
