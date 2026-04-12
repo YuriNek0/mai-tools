@@ -3,7 +3,8 @@ html {
 }
 
 body {
-  font-family: 'ヒラギノ角ゴ Pro W3', 'メイリオ', Meiryo, 'Noto Sans CJK TC', '微軟正黑體',
+  font-family:
+    'ヒラギノ角ゴ Pro W3', 'メイリオ', Meiryo, 'Noto Sans CJK TC', '微軟正黑體',
     'Microsoft Jhenghei', 'MS P Gothic', 'ＭＳ Ｐゴシック', sans-serif;
 }
 
@@ -30,6 +31,11 @@ td[tabIndex],
 th[tabIndex] {
   cursor: pointer;
   text-decoration: underline;
+}
+
+td[tabIndex].selected {
+  outline: 2px solid #ff1aa7;
+  outline-offset: -1px;
 }
 
 tbody tr td:first-child {
@@ -61,7 +67,10 @@ td.achv {
 
 .remaster {
   color: white;
-  text-shadow: -1px -1px 2px #9e45e2, -1px 1px 2px #9e45e2, 1px -1px 2px #9e45e2,
+  text-shadow:
+    -1px -1px 2px #9e45e2,
+    -1px 1px 2px #9e45e2,
+    1px -1px 2px #9e45e2,
     1px 1px 2px #9e45e2;
 }
 

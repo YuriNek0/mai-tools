@@ -18,13 +18,10 @@ export function PlateProgressDetail(props: Props) {
   const {versionInfo, playerScores} = props;
   const [plateType, setPlateType] = useState<PlateType | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty | null>(null);
-  const handleSelectPlateAndDifficulty = useCallback(
-    (plate: PlateType, d: Difficulty) => {
-      setPlateType(plate);
-      setSelectedDifficulty(d);
-    },
-    [],
-  );
+  const handleSelectPlateAndDifficulty = useCallback((plate: PlateType, d: Difficulty) => {
+    setPlateType(plate);
+    setSelectedDifficulty(d);
+  }, []);
   const allSongs = {
     dx: new Set(versionInfo.dx_songs),
     std: new Set(versionInfo.std_songs),
@@ -83,6 +80,8 @@ export function PlateProgressDetail(props: Props) {
         activeDifficulties={activeDifficulties}
         songCount={songCount}
         progressByPlate={progressByPlate}
+        selectedDifficulty={selectedDifficulty}
+        selectedPlateType={plateType}
         plateNames={versionInfo.plate_name}
         selectPlateAndDifficulty={handleSelectPlateAndDifficulty}
       />

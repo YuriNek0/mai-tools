@@ -5,9 +5,10 @@ import {PlateType} from './plate_info';
 
 interface Props {
   useTh?: boolean;
-  d: Difficulty;
   className?: string;
+  d: Difficulty;
   plateType?: PlateType;
+  selected?: boolean;
   value: string | number;
   onClick?: (plate: PlateType, d: Difficulty) => void;
 }
@@ -18,15 +19,18 @@ export function PlateProgressTableCell(props: Props) {
       onClick(plateType, d);
     }
   }, [onClick, plateType, d]);
-  const handleKeyDown = useCallback((evt: KeyboardEvent) => {
-    if (evt.ctrlKey || evt.altKey || evt.metaKey || evt.shiftKey) {
-      return;
-    }
-    if (evt.key === 'Enter' || evt.key === ' ') {
-      evt.preventDefault();
-      handleClick();
-    }
-  }, [handleClick]);
+  const handleKeyDown = useCallback(
+    (evt: KeyboardEvent) => {
+      if (evt.ctrlKey || evt.altKey || evt.metaKey || evt.shiftKey) {
+        return;
+      }
+      if (evt.key === 'Enter' || evt.key === ' ') {
+        evt.preventDefault();
+        handleClick();
+      }
+    },
+    [handleClick],
+  );
   const clickableProps =
     plateType && onClick
       ? {
@@ -35,12 +39,16 @@ export function PlateProgressTableCell(props: Props) {
           tabIndex: 0,
         }
       : {};
+  let tdClassName = props.className || '';
+  if (props.selected) {
+    tdClassName += ' selected';
+  }
   return props.useTh ? (
     <th className={getDifficultyClassName(props.d)} {...clickableProps}>
       {props.value}
     </th>
   ) : (
-    <td className={props.className} {...clickableProps}>
+    <td className={tdClassName} {...clickableProps}>
       {props.value}
     </td>
   );
