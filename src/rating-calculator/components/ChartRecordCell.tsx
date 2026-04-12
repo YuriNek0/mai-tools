@@ -6,6 +6,7 @@ const SCORE_RECORD_CELL_BASE_CLASSNAME = 'scoreRecordCell';
 const SCORE_RECORD_CELL_CLASSNAMES: Record<ColumnType, string> = {
   [ColumnType.NO]: 'orderCell',
   [ColumnType.SONG_TITLE]: 'songTitleCell',
+  [ColumnType.VERSION]: 'versionCell',
   [ColumnType.CHART_TYPE]: 'chartTypeCell',
   [ColumnType.LEVEL]: 'levelCell',
   [ColumnType.ACHIEVEMENT]: 'achievementCell',

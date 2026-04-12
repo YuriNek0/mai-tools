@@ -1,7 +1,7 @@
 import {ChartRecord} from '../common/chart-record';
 import {ChartRecordWithRating} from './types';
 
-type RecordNumberProp = 'rating' | 'level' | 'achievement';
+type RecordNumberProp = 'rating' | 'level' | 'achievement' | 'version';
 type RecordStringProp = 'songName';
 
 function compareNumbers(x: number, y: number) {
@@ -73,6 +73,16 @@ export function compareSongsByLevel(
 ) {
   // smaller first
   return compareSongsByNumAttr(record2, record1, 'level');
+}
+
+export function compareSongsByVersion(
+  record1: ChartRecordWithRating,
+  record2: ChartRecordWithRating,
+) {
+  // for charts in the same version, sort by chart type
+  return (
+    compareSongsByNumAttr(record2, record1, 'version') || compareSongsByChartType(record2, record1)
+  );
 }
 
 export function compareSongsByAchv(record1: ChartRecordWithRating, record2: ChartRecordWithRating) {

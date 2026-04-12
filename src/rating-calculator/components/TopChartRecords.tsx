@@ -12,6 +12,7 @@ import {
   compareSongsByName,
   compareSongsByRank,
   compareSongsByRating,
+  compareSongsByVersion,
 } from '../record-comparator';
 import {ChartRecordWithRating, ColumnType} from '../types';
 import {ChartRecordsTable} from './ChartRecordsTable';
@@ -22,6 +23,7 @@ import {LevelRankDistribution} from './LevelRankDistribution';
 const COLUMNS: ReadonlyArray<ColumnType> = [
   ColumnType.NO,
   ColumnType.SONG_TITLE,
+  ColumnType.VERSION,
   ColumnType.CHART_TYPE,
   ColumnType.LEVEL,
   ColumnType.ACHIEVEMENT,
@@ -32,6 +34,7 @@ const COLUMNS: ReadonlyArray<ColumnType> = [
 const COMPARATOR: Map<ColumnType, (x: ChartRecordWithRating, y: ChartRecordWithRating) => number> =
   new Map([
     [ColumnType.SONG_TITLE, compareSongsByName],
+    [ColumnType.VERSION, compareSongsByVersion],
     [ColumnType.CHART_TYPE, compareSongsByChartType],
     [ColumnType.LEVEL, compareSongsByLevel],
     [ColumnType.ACHIEVEMENT, compareSongsByAchv],

@@ -41,6 +41,7 @@ export interface RatingData {
 export const enum ColumnType {
   NO = 'no',
   SONG_TITLE = 'songTitle',
+  VERSION = 'version',
   CHART_TYPE = 'chartType',
   LEVEL = 'level',
   ACHIEVEMENT = 'achievement',

@@ -29,6 +29,7 @@ function getColumnTitle(lang: Language, col: ColumnType): string {
   return {
     [ColumnType.NO]: messages.num,
     [ColumnType.SONG_TITLE]: messages.song,
+    [ColumnType.VERSION]: CommonMessages[lang].version,
     [ColumnType.CHART_TYPE]: CommonMessages[lang].chartType,
     [ColumnType.LEVEL]: CommonMessages[lang].level,
     [ColumnType.ACHIEVEMENT]: CommonMessages[lang].achievementAbbr,

@@ -33,7 +33,8 @@ const VERSION_NAMES = [
   'PRiSM', // 23
   'PRiSM PLUS',
   'CiRCLE', // 25
-  'CiRCLE PLUS (beta)',
+  'CiRCLE PLUS',
+  // NOTE: values here are shown in rating table, so avoid adding suffixes like "(beta)"
 ];
 
 export const enum GameVersion {
