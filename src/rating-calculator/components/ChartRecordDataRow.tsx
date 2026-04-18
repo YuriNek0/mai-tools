@@ -37,7 +37,7 @@ const RECORD_RENDERER: Record<
 > = {
   [ColumnType.NO]: (_, idx) => idx.toString(),
   [ColumnType.SONG_TITLE]: (record, _, isCandidate) => getSongNameCell(record, isCandidate),
-  [ColumnType.VERSION]: (record) => getVersionName(record.version),
+  [ColumnType.VERSION]: (record) => getVersionName(record.version).replace(/ PLUS$/, '+'),
   [ColumnType.CHART_TYPE]: (record) => getChartTypeName(record.chartType),
   [ColumnType.LEVEL]: (record) =>
     getDisplayLv(record.level, record.difficulty === Difficulty.UTAGE),
