@@ -8,7 +8,7 @@ export function getMaimaiSongsLink(
   useInternalLevel: boolean,
   gameRegion?: GameRegion,
   minGameVer?: number,
-  maxGameVer: GameVersion = LATEST_VERSION
+  maxGameVer: GameVersion = LATEST_VERSION,
 ) {
   const q = new URLSearchParams();
 
@@ -26,7 +26,9 @@ export function getMaimaiSongsLink(
   if (minGameVer != null && minGameVer >= 0) {
     const versions: string[] = [];
     while (minGameVer <= maxGameVer) {
-      versions.push(getVersionName(minGameVer));
+      // Arcade-songs uses "maimaiでらっくす" instead of "でらっくす" for version name.
+      const versionName = getVersionName(minGameVer).replace(/^でらっくす/, 'maimaiでらっくす');
+      versions.push(versionName);
       minGameVer++;
     }
     q.set('versions', versions.join('|'));
