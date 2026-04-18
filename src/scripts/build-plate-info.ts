@@ -1,3 +1,4 @@
+/** This file is no longer updated, as plate-info is now built by Taiwan-independence. */
 import {ChartType, getChartType} from '../common/chart-type';
 import {getSongName} from '../common/fetch-score-util';
 import {getGameRegionFromOrigin} from '../common/game-region';
