@@ -21,13 +21,10 @@ function getNextRating(
   includeAllPerfect: boolean,
   record: NextRatingCandidate,
   lowestRating: number,
-  numOfRanks: number,
-): Map<string, ChartAchievementTarget> {
-  const ratingByRank = new Map<string, ChartAchievementTarget>();
-
+): ChartAchievementTarget | null {
   if (record.achievement >= RANK_SSS_PLUS.minAchv) {
     if (!includeAllPerfect) {
-      return ratingByRank;
+      return null;
     } else if (!record.fcap || !record.fcap.includes('AP')) {
       const [minRt] = calculateRatingRange(record.level, RANK_SSS_PLUS);
       const rating = 1 + minRt;
@@ -35,15 +32,15 @@ function getNextRating(
         // Because achievement of AP can be lower than 101% (usually 100.8%~100.9%), we divide
         // the delta by 2 to make the cost lower.
         const cost = (101 - record.achievement) / 2;
-        ratingByRank.set('AP', {
+        return {
           delta: rating - lowestRating,
           rating,
-          target: 'AP',
+          name: 'AP',
           cost,
-        });
+        };
       }
     }
-    return ratingByRank;
+    return null;
   }
 
   // Choose the higher one (if 50% vs 94%, choose 94%; if 98% vs 94%. choose 98%)
@@ -59,18 +56,15 @@ function getNextRating(
     }
     const [minRt] = calculateRatingRange(record.level, rank);
     if (minRt > lowestRating) {
-      ratingByRank.set(rank.title, {
+      return {
         delta: minRt - lowestRating,
         rating: minRt,
-        target: rank.minAchv + '%',
+        name: rank.minAchv + '%',
         cost: rank.minAchv - record.achievement,
-      });
-      if (ratingByRank.size >= numOfRanks) {
-        break;
-      }
+      };
     }
   }
-  return ratingByRank;
+  return null;
 }
 
 export function getCandidateCharts(
@@ -88,11 +82,11 @@ export function getCandidateCharts(
     const record = records[i];
     if (requiredLv && (record.level < requiredLv.minLv || record.level > requiredLv.maxLv))
       continue;
-    const ratingByRank = getNextRating(includeAllPerfect, record, Math.floor(record.rating), 2);
-    if (!ratingByRank.size) {
+    const target = getNextRating(includeAllPerfect, record, Math.floor(record.rating));
+    if (!target) {
       continue;
     }
-    record.nextRanks = ratingByRank;
+    record.target = target;
     candidates.push(record);
   }
   const minRating = Math.floor(records[topCount - 1].rating);
@@ -100,11 +94,11 @@ export function getCandidateCharts(
     const record = records[i];
     if (requiredLv && (record.level < requiredLv.minLv || record.level > requiredLv.maxLv))
       continue;
-    const ratingByRank = getNextRating(includeAllPerfect, record, minRating, 2);
-    if (!ratingByRank.size) {
+    const target = getNextRating(includeAllPerfect, record, minRating);
+    if (!target) {
       continue;
     }
-    record.nextRanks = ratingByRank;
+    record.target = target;
     candidates.push(record);
     if (candidates.length >= count) {
       break;
@@ -169,11 +163,11 @@ export function getNotPlayedCharts(
         achievement: 0,
         fcap: null,
       };
-      const ratingByRank = getNextRating(includeAllPerfect, record, minRating, 1);
-      if (!ratingByRank.size) {
+      const target = getNextRating(includeAllPerfect, record, minRating);
+      if (!target) {
         continue;
       }
-      record.nextRanks = ratingByRank;
+      record.target = target;
       candidates.push(record);
     }
     if (candidates.length >= count) {

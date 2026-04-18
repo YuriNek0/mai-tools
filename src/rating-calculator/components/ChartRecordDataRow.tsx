@@ -51,19 +51,17 @@ const RECORD_RENDERER: Record<
       record.achievement.toFixed(4) + '%'
     ),
   [ColumnType.RANK]: (record) => record.rankTitle,
-  [ColumnType.NEXT_RANK]: (record) =>
-    record.nextRanks
-      ? Array.from(record.nextRanks.values()).map((r, idx) => <div key={idx}>{r.target}</div>)
-      : '',
-  [ColumnType.NEXT_RATING]: (record) =>
-    record.nextRanks
-      ? Array.from(record.nextRanks.values()).map((r, idx) => (
-          <div key={idx}>
-            {Math.floor(r.rating)}
-            &nbsp;(+{r.delta.toFixed(0)})
-          </div>
-        ))
-      : '',
+  [ColumnType.TARGET]: (record) =>
+    record.target ? (
+      <>
+        <div>{record.target.name}</div>
+        <div>
+          {Math.floor(record.target.rating)}&nbsp;(+{record.target.delta.toFixed(0)})
+        </div>
+      </>
+    ) : (
+      ''
+    ),
   [ColumnType.RATING]: (record) => Math.floor(record.rating).toString(),
 };
 

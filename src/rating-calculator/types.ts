@@ -1,11 +1,12 @@
 import {ChartRecord} from '../common/chart-record';
 
 export interface ChartAchievementTarget {
+  /** Can be AP, 100.5%, 100%, etc.  */
+  name: string;
   /** Rating = absolute rating points if this target is achieved. */
   rating: number;
   /** Delta = rating increase if this target is achieved. */
   delta: number;
-  target: string;
   /**
    * Cost = achievement needed to reach the target.
    * For example, if current achievement is 97.7 and target is 99.0, then cost = 1.3
@@ -22,7 +23,7 @@ export interface ChartRecordWithRating extends ChartRecord {
    */
   rankTitle: string | null;
   rating: number;
-  nextRanks?: Map<string, ChartAchievementTarget>;
+  target?: ChartAchievementTarget;
   order?: number;
   isTarget?: boolean;
 }
@@ -46,7 +47,6 @@ export const enum ColumnType {
   LEVEL = 'level',
   ACHIEVEMENT = 'achievement',
   RANK = 'rank',
-  NEXT_RANK = 'nextRank',
+  TARGET = 'target',
   RATING = 'rating',
-  NEXT_RATING = 'nextRating',
 }

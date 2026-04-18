@@ -11,9 +11,8 @@ const SCORE_RECORD_CELL_CLASSNAMES: Record<ColumnType, string> = {
   [ColumnType.LEVEL]: 'levelCell',
   [ColumnType.ACHIEVEMENT]: 'achievementCell',
   [ColumnType.RANK]: 'rankCell',
-  [ColumnType.NEXT_RANK]: 'rankCell',
   [ColumnType.RATING]: 'ratingCell',
-  [ColumnType.NEXT_RATING]: 'nextRatingCell',
+  [ColumnType.TARGET]: 'nextRatingCell',
 };
 
 interface Props {
