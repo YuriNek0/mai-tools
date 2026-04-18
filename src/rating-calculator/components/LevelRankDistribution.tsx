@@ -1,4 +1,4 @@
-import {memo} from 'react';
+import {memo, useCallback, useMemo, useState} from 'react';
 
 import {ChartRecord} from '../../common/chart-record';
 import {GameVersion} from '../../common/game-version';
@@ -11,59 +11,80 @@ import {RankDistributionHeadRow} from './RankDistributionHeadRow';
 const LEVEL_RANK_CELL_BASE_CLASSNAME = 'levelRankCell';
 const LEVEL_RANK_CELL_CLASSNAMES = ['officialLevelCell'];
 
-function getRecordsPerLevel(gameVer: GameVersion, records: ReadonlyArray<ChartRecord>) {
+function getRecordsPerLevel(
+  records: ReadonlyArray<ChartRecord>,
+  getMapKey: (level: number) => string,
+): Map<string, ChartRecord[]> {
   const levels = records.map((r) => r.level);
   levels.sort(compareNumber);
   levels.reverse();
   const recordsPerLevel = new Map<string, ChartRecord[]>();
   for (const lv of levels) {
-    const officialLv = getOfficialLevel(gameVer, lv);
-    if (!recordsPerLevel.has(officialLv)) {
-      recordsPerLevel.set(officialLv, []);
+    const lvText = getMapKey(lv);
+    if (!recordsPerLevel.has(lvText)) {
+      recordsPerLevel.set(lvText, []);
     }
   }
   for (const r of records) {
-    recordsPerLevel.get(getOfficialLevel(gameVer, r.level)).push(r);
+    const lvText = getMapKey(r.level);
+    recordsPerLevel.get(lvText).push(r);
   }
   return recordsPerLevel;
 }
 
 interface Props {
   gameVer: GameVersion;
-  topLeftCell: string;
   chartRecords: ReadonlyArray<ChartRecord>;
   topChartsCount: number;
 }
 
-export const LevelRankDistribution = memo(
-  ({gameVer, chartRecords, topLeftCell, topChartsCount}: Props) => {
-    const topRecords = chartRecords.slice(0, topChartsCount);
-    const includeAllPerfect = gameVer >= GameVersion.CiRCLE;
-    const rankMap = getRankMap(topRecords, includeAllPerfect);
-    const recordsPerLevel = getRecordsPerLevel(gameVer, topRecords);
-    return (
-      <table className="rankDistributionTable">
-        <thead>
-          <RankDistributionHeadRow
-            columns={rankMap.keys()}
-            firstCell={topLeftCell}
+export const LevelRankDistribution = memo(({gameVer, chartRecords, topChartsCount}: Props) => {
+  const [showMore, setShowMore] = useState<boolean>();
+  const topRecords = chartRecords.slice(0, topChartsCount);
+  const includeAllPerfect = gameVer >= GameVersion.CiRCLE;
+  const ranks = Array.from(getRankMap(topRecords, includeAllPerfect).keys());
+  const recordsPerLevel = useMemo(
+    () =>
+      showMore
+        ? getRecordsPerLevel(topRecords, (lv) => lv.toFixed(1))
+        : getRecordsPerLevel(topRecords, (lv) => getOfficialLevel(gameVer, lv)),
+    [gameVer, showMore, topRecords],
+  );
+
+  const toggleShowMore = useCallback(
+    (e: React.SyntheticEvent) => {
+      e.preventDefault();
+      setShowMore(!showMore);
+    },
+    [showMore],
+  );
+  const firstCell = (
+    <button className="expandRatingOverview" onClick={toggleShowMore}>
+      {showMore ? '－' : '＋'}
+    </button>
+  );
+  return (
+    <table className="rankDistributionTable">
+      <thead>
+        <RankDistributionHeadRow
+          columns={ranks}
+          firstCell={firstCell}
+          baseCellClassname={LEVEL_RANK_CELL_BASE_CLASSNAME}
+          perColumnClassnames={LEVEL_RANK_CELL_CLASSNAMES}
+        />
+      </thead>
+      <tbody>
+        {Array.from(recordsPerLevel.entries()).map(([level, records]) => (
+          <RankDistributionDataRow
+            key={level}
+            rowHead={level}
+            columns={ranks}
+            rankDist={getRankDistribution(records, includeAllPerfect)}
             baseCellClassname={LEVEL_RANK_CELL_BASE_CLASSNAME}
             perColumnClassnames={LEVEL_RANK_CELL_CLASSNAMES}
           />
-        </thead>
-        <tbody>
-          {Array.from(recordsPerLevel.entries()).map(([level, records]) => (
-            <RankDistributionDataRow
-              key={level}
-              rowHead={level}
-              columns={rankMap.keys()}
-              rankDist={getRankDistribution(records, includeAllPerfect)}
-              baseCellClassname={LEVEL_RANK_CELL_BASE_CLASSNAME}
-              perColumnClassnames={LEVEL_RANK_CELL_CLASSNAMES}
-            />
-          ))}
-        </tbody>
-      </table>
-    );
-  },
-);
+        ))}
+      </tbody>
+    </table>
+  );
+});

@@ -1,7 +1,7 @@
 import {memo} from 'react';
 
 interface Props {
-  values: ReadonlyArray<string | number>;
+  values: ReadonlyArray<React.ReactNode | string | number>;
   isHeading?: boolean;
   rowClassname?: string;
   baseCellClassname: string;

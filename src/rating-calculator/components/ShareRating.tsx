@@ -34,7 +34,6 @@ const MessagesByLang = {
 function downloadJson(fileContent: string, filename: string) {
   const file = new Blob([fileContent], {type: 'application/json'});
   const url = URL.createObjectURL(file);
-  console.log(url);
 
   const anchor = document.createElement('a');
   anchor.href = url;

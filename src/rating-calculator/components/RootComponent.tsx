@@ -195,7 +195,7 @@ export const RootComponent = () => {
     if (lvInputTextarea instanceof HTMLTextAreaElement) {
       saveUserPreference(UserPreference.InternalLvOverride, lvInputTextarea.value);
       const overrides = parseInternalLvInput(lvInputTextarea.value);
-      console.log(overrides);
+      console.log('level overrides:', overrides);
       setLvOverrides(overrides);
     }
   }, []);
@@ -292,7 +292,7 @@ function loadLvOverrides(): Partial<SongProperties>[] {
     rawOverrides = lvInputTextarea.value;
   }
   const overrides = parseInternalLvInput(rawOverrides);
-  console.log(overrides);
+  console.log('level overrides:', overrides);
   return overrides;
 }
 

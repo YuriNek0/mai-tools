@@ -2,9 +2,7 @@ import '../css/song-record-styles.css';
 
 import {useCallback, useState} from 'react';
 
-import {useLanguage} from '../../common/lang-react';
 import {SongDatabase} from '../../common/song-props';
-import {CommonMessages} from '../common-messages';
 import {
   compareSongsByAchv,
   compareSongsByChartType,
@@ -79,7 +77,6 @@ export const TopChartRecords = (props: Props) => {
     }
   }
 
-  const lang = useLanguage();
   return (
     <CollapsibleContainer
       className={
@@ -92,7 +89,6 @@ export const TopChartRecords = (props: Props) => {
           <div className="inlineBlock">
             <LevelRankDistribution
               gameVer={songDatabase.gameVer}
-              topLeftCell={CommonMessages[lang].level}
               chartRecords={records}
               topChartsCount={limit}
             />
