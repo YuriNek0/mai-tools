@@ -8,7 +8,7 @@ export const BOOKMARKLET_LINK = `javascript:(
   function(d) {
     if (${JSON.stringify(MAIMAI_NET_ORIGINS)}.indexOf(d.location.origin) >= 0) {
       vars = d.createElement("script");
-      s.src="${ALL_IN_ONE_SCRIPT}?t=" + Math.floor(Date.now() / 60000);
+      s.src="${ALL_IN_ONE_SCRIPT}";
       d.body.append(s);
     }
   }

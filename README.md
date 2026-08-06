@@ -12,14 +12,14 @@ The generated site and scripts are available at https://yurinek0.github.io/mai-t
 
 ### Userscript
 
-Install [install-mai-tools.user.js](https://yurinek0.github.io/mai-tools/install-mai-tools.user.js) with Tampermonkey or another userscript manager. The tools will then load automatically on maimai DX NET pages.
+Install [install-mai-tools.user.js](https://github.com/YuriNek0/mai-tools/blob/gh-pages/install-mai-tools.user.js) with Tampermonkey or another userscript manager. The tools will then load automatically on maimai DX NET pages.
 
 ### Desktop
 
 1. Bookmark any page and name the bookmark **MMBL**.
 2. Edit the bookmark and replace its URL with:
 
-       javascript:(function(d){var s=d.createElement('script');s.src='https://yurinek0.github.io/mai-tools/scripts/all-in-one.js?t='+Math.floor(Date.now()/60000);d.body.append(s)})(document)
+       javascript:(function(d){var s=d.createElement('script');s.src='https://yurinek0.github.io/mai-tools/scripts/all-in-one.js';d.body.append(s)})(document)
 
 3. Log in to maimai DX NET and open the page on which you want to use a tool.
 4. Select the **MMBL** bookmark.

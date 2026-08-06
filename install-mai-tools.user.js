@@ -14,7 +14,6 @@
 (function() {
     'use strict';
     const s = document.createElement('script');
-    const cacheBuster = Math.floor(Date.now()/60000);
-    s.src = 'https://yurinek0.github.io/mai-tools/scripts/all-in-one.js?t=' + cacheBuster;
+    s.src = 'https://yurinek0.github.io/mai-tools/scripts/all-in-one.js';
     document.body.append(s);
 })();
