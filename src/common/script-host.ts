@@ -1,23 +1,24 @@
 import {isMaimaiNetOrigin} from './game-region';
 
 export const FALLBACK_MAI_TOOLS_BASE_URL =
-  'https://yurinek0.github.io/mai-tools';
+  'https://myjian.github.io/mai-tools';
 // const fallbackMaiToolsBaseUrl = "http://localhost:8080";
 
 /**
  * Find where the scripts are loaded from. This function is usually used
  * by scripts running on maimai NET.
  */
+ // @ts-ignore
 export function getScriptHost(scriptName: string): string {
-  const scripts = Array.from(document.querySelectorAll('script'));
-  while (scripts.length) {
-    const script = scripts.pop();
-    if (script.src.includes(scriptName) || script.src.includes('all-in-one')) {
-      const url = new URL(script.src);
-      const path = url.pathname;
-      return url.origin + path.substring(0, path.lastIndexOf('/scripts'));
-    }
-  }
+  // const scripts = Array.from(document.querySelectorAll('script'));
+  // while (scripts.length) {
+  //   const script = scripts.pop();
+  //   if (script.src.includes(scriptName) || script.src.includes('all-in-one')) {
+  //     const url = new URL(script.src);
+  //     const path = url.pathname;
+  //     return url.origin + path.substring(0, path.lastIndexOf('/scripts'));
+  //   }
+  // }
   return FALLBACK_MAI_TOOLS_BASE_URL;
 }
 
