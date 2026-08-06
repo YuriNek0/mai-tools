@@ -30,5 +30,5 @@ Each JSON file in this folder represents data specific to the version.
 Each JSON file in this folder represents data specific to the region.
 
 - Chart type: Either "dx" or "standard"
-  - Debut version: The version when the song was added. Please refer to [src/common/game-version.ts](https://github.com/myjian/mai-tools/blob/gh-pages/src/common/game-version.ts) for the version numbers.
+  - Debut version: The version when the song was added. Please refer to [src/common/game-version.ts](https://github.com/YuriNek0/mai-tools/blob/gh-pages/src/common/game-version.ts) for the version numbers.
     - Song names: An array of song names

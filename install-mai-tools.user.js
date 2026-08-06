@@ -6,6 +6,8 @@
 // @match        https://maimaidx.jp/*
 // @match        https://maimaidx-eng.com/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @downloadURL  https://yurinek0.github.io/mai-tools/install-mai-tools.user.js
+// @updateURL    https://yurinek0.github.io/mai-tools/install-mai-tools.user.js
 // @grant        none
 // ==/UserScript==
 
@@ -13,6 +15,6 @@
     'use strict';
     const s = document.createElement('script');
     const cacheBuster = Math.floor(Date.now()/60000);
-    s.src = 'https://myjian.github.io/mai-tools/scripts/all-in-one.js?t=' + cacheBuster;
+    s.src = 'https://yurinek0.github.io/mai-tools/scripts/all-in-one.js?t=' + cacheBuster;
     document.body.append(s);
 })();

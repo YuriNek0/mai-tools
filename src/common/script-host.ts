@@ -1,6 +1,7 @@
 import {isMaimaiNetOrigin} from './game-region';
 
-export const FALLBACK_MAI_TOOLS_BASE_URL = 'https://myjian.github.io/mai-tools';
+export const FALLBACK_MAI_TOOLS_BASE_URL =
+  'https://yurinek0.github.io/mai-tools';
 // const fallbackMaiToolsBaseUrl = "http://localhost:8080";
 
 /**

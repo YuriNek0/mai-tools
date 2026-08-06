@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/myjian/mai-tools.git"
+    "url": "git+https://github.com/YuriNek0/mai-tools.git"
   },
   "keywords": [],
   "author": "Ming-Yuan Jian",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/myjian/mai-tools/issues"
+    "url": "https://github.com/YuriNek0/mai-tools/issues"
   },
-  "homepage": "https://myjian.github.com/mai-tools",
+  "homepage": "https://yurinek0.github.io/mai-tools",
   "dependencies": {
     "dom-to-image": "^2.6.0",
     "react": "^19.0.0",

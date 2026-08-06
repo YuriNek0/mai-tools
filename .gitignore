@@ -1,7 +1,7 @@
 *.un~
 /node_modules/
 .idea/
-build/
+.tmp/
 .DS_Store
 tmpclaude-*
 tsconfig.tsbuildinfo
